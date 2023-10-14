@@ -1,11 +1,13 @@
+# app.routes module __init__.py
+
 from flask import render_template, redirect, url_for, request
-from app import app, db
+from app import app
 from app.models import WritingProject
-from app.views.user_routes import user_blueprint
+from app.routes.user_routes import user_blueprint
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
-from app.views.user_routes import user_blueprint
-from app.views.project_routes import project_blueprint
+from app.routes.user_routes import user_blueprint
+from app.routes.project_routes import project_blueprint
 
 app.register_blueprint(project_blueprint, url_prefix='/project')
 

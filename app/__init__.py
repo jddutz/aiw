@@ -1,3 +1,5 @@
+# app module __init__.py
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -15,4 +17,4 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# Avoid importing routes or models here
+import app.routes
