@@ -1,14 +1,16 @@
 # app module __init__.py
 
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 flask_app = Flask(__name__)
+flask_app.secret_key = os.environ.get('AIW_FLASK_SECRET_KEY', None)
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
     username="johndutz",
-    password="zmgQh3F8BF6if",
+    password=os.environ.get('AIW_MYSQL_PASSWORD', None),
     hostname="johndutz.mysql.pythonanywhere-services.com",
     databasename="johndutz$aiw",
 )
