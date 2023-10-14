@@ -7,7 +7,7 @@ flask_app = Flask(__name__)
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
     username="johndutz",
-    password="zm#gQh3&F!8BF6if",
+    password="zmgQh3F8BF6if",
     hostname="johndutz.mysql.pythonanywhere-services.com",
     databasename="johndutz$aiw",
 )
