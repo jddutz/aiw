@@ -15,7 +15,7 @@ flask_app.register_blueprint(project_blueprint, url_prefix='/project')
 @flask_app.route('/page/<int:page>')
 def index(page=1):
     PER_PAGE = 10
-    projects = WritingProject.query.paginate(page, PER_PAGE, False).items
+    projects = WritingProject.query.paginate(page=page, per_page=PER_PAGE, error_out=False).items
     return render_template('index.html', projects=projects, page=page)
 
 
