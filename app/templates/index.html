@@ -1,22 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome to AI Writing Assistant</h1>
-
-{% for project in projects %}
-    {% include "_project_widget.html" %}
-{% endfor %}
-
-<!-- Pagination controls -->
-<div class="pagination">
-    {% if page > 1 %}
-        <a href="{{ url_for('index', page=page-1) }}">Previous</a>
-    {% endif %}
-    Page {{ page }} 
-    {% if projects|length >= 10 %} <!-- assuming each page has 10 items max -->
-        <a href="{{ url_for('index', page=page+1) }}">Next</a>
-    {% endif %}
+<!-- Hero Section: Compelling Visual + Intro Text -->
+<div class="hero-section">
+    <!-- Placeholder for a visually appealing background image or graphic. -->
+    <div class="hero-image" style="background-image: url('path_to_image.jpg');"></div>
+    <h1>Unleash Your Creativity with WritingProject!</h1>
+    <p>Dive into the world of creative writing, guided every step of the way by a state-of-the-art AI assistant. Whether you're a budding writer or an accomplished author, WritingProject is here to elevate your storytelling.</p>
+    <!-- Call to Action -->
+    <a href="{{ url_for('project.create_project') }}" class="cta-button">Get Started Now</a>
 </div>
 
-<a href="{{ url_for('project.create_project') }}">Start New Project</a>
+<!-- Main Features Section -->
+<div class="features-section">
+    <h2>Main Features:</h2>
+
+    <!-- Each feature could be accompanied by an icon or small graphic. -->
+    <div class="feature">
+        <h3>Dynamic Story Framework</h3>
+        <p>Begin with the bones of your tale. Create storylines with multiple acts, chapters, and scenes... and so on.</p>
+    </div>
+    
+    <div class="feature">
+        <h3>Intuitive AI Assistance</h3>
+        <p>The AI is your co-author, mentor, and critic...</p>
+    </div>
+    
+    <!-- ... Repeat for each feature ... -->
+
+    <div class="feature">
+        <h3>Your Story, Your Rules</h3>
+        <p>While the AI maintains context throughout, you're always in control...</p>
+    </div>
+    
+    <div class="feature">
+        <h3>Share Your Work</h3>
+        <p>Seamlessly export to formats like EPUB, PDF, and DOC...</p>
+    </div>
+</div>
+
+<!-- The Road Ahead Section -->
+<div class="future-section">
+    <h2>The Road Ahead:</h2>
+    <p>This is just the beginning! As you weave your stories, the AI learns, adapts, and grows...</p>
+</div>
+
+<!-- Final Call to Action -->
+<div class="cta-section">
+    <h2>Start your WritingProject today, and let every word tell a tale!</h2>
+    <a href="{{ url_for('project.create_project') }}" class="cta-button">Embark on Your Writing Journey</a>
+</div>
+
 {% endblock %}
