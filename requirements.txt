@@ -1,5 +1,4 @@
 Flask
 Flask-SQLAlchemy
 pydantic
-Flask-Migrate
-flask_script
+flask_migrate
