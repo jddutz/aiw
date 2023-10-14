@@ -1,4 +1,5 @@
-from app.models import WritingProject, db
+from app import db
+from app.models import WritingProject
 
 def create_new_project(project_info):
     """
