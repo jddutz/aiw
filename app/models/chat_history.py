@@ -1,11 +1,11 @@
 # models.chat_history.py
 
-from pydantic import BaseModel
+from app import db
 from typing import Optional, List
 from models import ChatMessage
 import uuid
 
-class ChatHistory(BaseModel):
+class ChatHistory(db.Model):
     id: Optional[str] = str(uuid.uuid4())
     messages: List[ChatMessage] = []
     

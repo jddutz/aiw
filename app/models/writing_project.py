@@ -1,8 +1,9 @@
 # models.writing_project.py
 
+from app import db
 import json
 
-class WritingProject:
+class WritingProject(db.Model):
     """
     Represents a writing project.
     """

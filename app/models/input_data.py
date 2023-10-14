@@ -1,9 +1,9 @@
 # models.input_data.py
 
-from pydantic import BaseModel
+from app import db
 from typing import Optional
 
-class InputData(BaseModel):
+class InputData(db.Model):
     conversation_id: Optional[str] = None
     project_id: Optional[str] = None
     input: str

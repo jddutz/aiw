@@ -1,12 +1,12 @@
 # models.chat_message.py
 
-from pydantic import BaseModel
+from app import db
 from typing import Optional
 
 from datetime import datetime
 import uuid
 
-class ChatMessage(BaseModel):
+class ChatMessage(db.Model):
     id: Optional[str] = str(uuid.uuid4())
     role: Optional[str] = None
     content: Optional[str] = None
