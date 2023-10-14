@@ -1,7 +1,7 @@
 # models.writing_project.py
 
-from datetime import datetime
 from app import db
+from datetime import datetime
 
 class WritingProject(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

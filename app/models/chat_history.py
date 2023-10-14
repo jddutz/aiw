@@ -1,7 +1,7 @@
 # models.chat_history.py
 
 from app import db
-from models import ChatMessage
+from .chat_message import ChatMessage
 
 class ChatHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
