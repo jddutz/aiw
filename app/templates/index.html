@@ -2,8 +2,21 @@
 
 {% block content %}
 <h1>Welcome to AI Writing Assistant</h1>
-<p>Choose an option below:</p>
-<a href="{{ url_for('load_project') }}">Load Project</a>
-<br>
+
+{% for project in projects %}
+    {% include "_project_widget.html" %}
+{% endfor %}
+
+<!-- Pagination controls -->
+<div class="pagination">
+    {% if page > 1 %}
+        <a href="{{ url_for('index', page=page-1) }}">Previous</a>
+    {% endif %}
+    Page {{ page }} 
+    {% if projects|length >= 10 %} <!-- assuming each page has 10 items max -->
+        <a href="{{ url_for('index', page=page+1) }}">Next</a>
+    {% endif %}
+</div>
+
 <a href="{{ url_for('new_project') }}">Start New Project</a>
 {% endblock %}
