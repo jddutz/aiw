@@ -1,15 +1,14 @@
 # models.chat_history.py
 
 from app import db
-from typing import Optional, List
 from models import ChatMessage
-import uuid
 
 class ChatHistory(db.Model):
-    id: Optional[str] = str(uuid.uuid4())
-    messages: List[ChatMessage] = []
-    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    messages = db.relationship('ChatMessage', backref='chat_history', lazy=True)
+
     def add_message(self, message: ChatMessage):
+        message.chat_history_id = self.id
         self.messages.append(message)
 
     def to_dict(self):
@@ -21,6 +20,5 @@ class ChatHistory(db.Model):
     @classmethod
     def from_dict(cls, data):
         history = cls()
-        history.id = data["id"]
         history.messages = [ChatMessage.from_dict(msg_data) for msg_data in data["messages"]]
         return history
