@@ -1,6 +1,6 @@
 Flask
 Flask-SQLAlchemy
-pydantic
-flask_migrate
 mysql-connector-python
+Flask-Migrate
+pydantic
 openai

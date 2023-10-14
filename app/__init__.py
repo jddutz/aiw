@@ -2,6 +2,7 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 flask_app = Flask(__name__)
 
@@ -16,5 +17,6 @@ flask_app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(flask_app)
+migrate = Migrate(app, db)
 
 import app.routes
