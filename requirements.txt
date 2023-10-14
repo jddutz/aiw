@@ -2,3 +2,4 @@ Flask
 Flask-SQLAlchemy
 pydantic
 flask_migrate
+pymysql
