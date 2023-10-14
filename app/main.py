@@ -1,10 +1,3 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from app import app, routes, models
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Use other DBs if needed.
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-from app import routes, models
+# Any other additional setup if required
