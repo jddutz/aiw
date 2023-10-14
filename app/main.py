@@ -1,3 +1,3 @@
-from app import app, routes, models
+from app import app, models, db, routes
 
 # Any other additional setup if required
