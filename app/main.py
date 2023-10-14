@@ -1,3 +1,4 @@
-from app import app, models, db, routes
+from app import app, db
+from flask_migrate import Migrate
 
-# Any other additional setup if required
+migrate = Migrate(app, db)
