@@ -17,6 +17,6 @@ flask_app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(flask_app)
-migrate = Migrate(app, db)
+migrate = Migrate(flask_app, db)
 
 import app.routes
