@@ -1,4 +1,4 @@
-# models.init.py
+# app.models module __init__.py
 
 from .writing_project import WritingProject
 from .chat_message import ChatMessage

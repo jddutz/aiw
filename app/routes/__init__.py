@@ -4,11 +4,11 @@ from flask import render_template, redirect, url_for, request
 from app import flask_app
 from app.models import WritingProject
 from app.routes.user_routes import user_blueprint
-
-flask_app.register_blueprint(user_blueprint, url_prefix='/user')
-from app.routes.user_routes import user_blueprint
+from app.routes.chat_routes import chat_blueprint
 from app.routes.project_routes import project_blueprint
 
+flask_app.register_blueprint(user_blueprint, url_prefix='/user')
+flask_app.register_blueprint(chat_blueprint, url_prefix='/chat')
 flask_app.register_blueprint(project_blueprint, url_prefix='/project')
 
 @flask_app.route('/')
