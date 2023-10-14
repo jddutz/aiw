@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to AI Writing Assistant</h1>
+<p>Choose an option below:</p>
+<a href="{{ url_for('load_project') }}">Load Project</a>
+<br>
+<a href="{{ url_for('new_project') }}">Start New Project</a>
+{% endblock %}
