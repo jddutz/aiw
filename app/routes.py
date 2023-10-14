@@ -1,9 +1,14 @@
 from flask import render_template, redirect, url_for, request
-from app import app
+from app import app, db
+from app.models import Project
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/page/<int:page>')
+def index(page=1):
+    PER_PAGE = 10
+    projects = Project.query.paginate(page, PER_PAGE, False).items
+    return render_template('index.html', projects=projects, page=page)
+
 
 @app.route('/load_project', methods=['GET', 'POST'])
 def load_project():

@@ -1,7 +1,7 @@
 # models.writing_project.py
 
+from datetime import datetime
 from app import db
-import json
 
 class WritingProject(db.Model):
     """
@@ -20,12 +20,13 @@ class WritingProject(db.Model):
         self.project_id = project_id
         self.title = title
         self.description = description
+        timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __str__(self):
         return f"WritingProject({self.project_id}, {self.title})"
 
     def __repr__(self):
-        return str(self)
+        return f'<WritingProject {self.title}>'
     
     def to_dict(self):
         return {
