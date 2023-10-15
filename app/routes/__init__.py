@@ -1,6 +1,6 @@
 # app.routes module __init__.py
 
-from flask import render_template, redirect, url_for, request
+from flask import session, render_template, redirect, url_for, request
 from app import flask_app
 from app.models import WritingProject
 
@@ -23,6 +23,12 @@ flask_app.register_blueprint(project_api_v1, url_prefix='/api/v1/project')
 # Home/index page
 @flask_app.route('/')
 def index():
+    # Check if user_id is in session
+    if not session.get('user_id'):
+        # If user_id is not in session, render the landing page
+        return render_template('landing_page.html')
+    
+    # If user_id is in session, continue to load projects and render the index page
     PER_PAGE = 10
     page = request.args.get('page', default=1, type=int)
     projects = WritingProject.query.paginate(page=page, per_page=PER_PAGE, error_out=False).items
