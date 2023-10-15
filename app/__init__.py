@@ -8,13 +8,21 @@ from flask_migrate import Migrate
 flask_app = Flask(__name__)
 flask_app.secret_key = os.getenv('AIW_FLASK_SECRET_KEY', None)
 
+app_env = os.getenv('APP_ENV', 'PROD')  # default to 'PROD', set env var to 'DEV' for local development
+
+if app_env == 'DEV':
+    mysql_user = "root"
+    mysql_hostname = "localhost"
+    mysql_dbname = "aiw"
+else:  # PROD
+    mysql_user = "johndutz"
+    mysql_hostname = "johndutz.mysql.pythonanywhere-services.com"
+    mysql_dbname = "johndutz$aiw"
+    
 mysql_password = os.getenv('AIW_MYSQL_PASSWORD', None)
-SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="johndutz",
-    password=mysql_password,
-    hostname="johndutz.mysql.pythonanywhere-services.com",
-    databasename="johndutz$aiw",
-)
+
+SQLALCHEMY_DATABASE_URI = f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_hostname}/{mysql_dbname}"
+
 flask_app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 flask_app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
