@@ -1,4 +1,4 @@
-# chat_gpt.py
+# app/chat_gpt.py
 
 import db.conversations
 import db.projects

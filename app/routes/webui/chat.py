@@ -1,4 +1,4 @@
-# app.routes.chat_routes.py
+# app/routes.webui.chat.py
 
 from flask import Blueprint
 

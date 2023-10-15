@@ -1,4 +1,4 @@
-# db.conversations.py
+# app/db/conversations.py
 
 import SQLAlchemy
 

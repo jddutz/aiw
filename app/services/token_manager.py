@@ -1,4 +1,5 @@
-# app/services/delete_token_service.py
+# app/services/token_manager.py
+
 import os
 from datetime import datetime, timedelta
 from itsdangerous import URLSafeTimedSerializer

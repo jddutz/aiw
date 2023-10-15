@@ -1,4 +1,4 @@
-# app module __init__.py
+# app/__init__.py
 
 import os
 from flask import Flask

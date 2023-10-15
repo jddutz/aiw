@@ -1,4 +1,4 @@
-# app.routes module __init__.py
+# app/routes/__init__.py
 
 from flask import session, render_template, redirect, url_for, request
 from app import flask_app
@@ -13,9 +13,9 @@ flask_app.register_blueprint(chat_blueprint, url_prefix='/chat')
 flask_app.register_blueprint(project_blueprint, url_prefix='/project')
 
 # API blueprints
-from app.routes.api.v1.user_api_v1 import user_api_v1
-from app.routes.api.v1.chat_api_v1 import chat_api_v1
-from app.routes.api.v1.project_api_v1 import project_api_v1
+from app.routes.api.v1.user import user_api_v1
+from app.routes.api.v1.chat import chat_api_v1
+from app.routes.api.v1.project import project_api_v1
 flask_app.register_blueprint(user_api_v1, url_prefix='/api/v1/user')
 flask_app.register_blueprint(chat_api_v1, url_prefix='/api/v1/chat')
 flask_app.register_blueprint(project_api_v1, url_prefix='/api/v1/project')

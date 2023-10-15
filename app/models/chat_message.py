@@ -1,4 +1,4 @@
-# models.chat_message.py
+# app/models/chat_message.py
 
 from app import db
 from datetime import datetime

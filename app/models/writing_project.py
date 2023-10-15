@@ -1,4 +1,4 @@
-# models.writing_project.py
+# app/models/writing_project.py
 
 from app import db
 from datetime import datetime

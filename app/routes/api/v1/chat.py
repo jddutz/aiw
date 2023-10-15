@@ -1,4 +1,4 @@
-# app.routes.api.v1.chat_api_v1.py
+# app/routes/api/v1/chat.py
 
 from flask import render_template, redirect, url_for, request, Blueprint
 

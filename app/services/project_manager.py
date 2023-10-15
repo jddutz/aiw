@@ -1,3 +1,5 @@
+# app/services/project_manager.py
+
 from app import db
 from app.models import WritingProject
 

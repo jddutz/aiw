@@ -1,4 +1,4 @@
-# models.chat_history.py
+# app/models/chat_history.py
 
 from app import db
 from .chat_message import ChatMessage
