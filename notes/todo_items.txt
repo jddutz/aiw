@@ -1,0 +1,26 @@
+Project Dashboard Integration:
+
+Once the project has been created, users will be redirected to their project dashboard.
+Any steps that were skipped or not fully completed during the initial setup process will be listed as TODO items on the dashboard.
+TODO Notifications:
+
+The dashboard will have a dedicated section (or perhaps a sidebar) listing all pending TODO items.
+The AI can occasionally send gentle reminders about these incomplete steps to encourage the user to revisit them, but without being intrusive.
+Interactive TODO Items:
+
+Clicking on a TODO item can reopen the relevant part of the wizard or a simplified version of it.
+For instance, if "Character Introduction" was skipped during the initial setup, clicking on that TODO will prompt the AI to ask about character details.
+Flexibility in TODO Completion:
+
+Users can choose to dismiss a TODO if they feel it's not relevant to their project.
+Conversely, they can also add custom TODOs, which might be specific tasks or reminders they want to set for themselves.
+Progress Tracking:
+
+As the writer works through their TODOs, there can be a progress bar or tracker indicating how "complete" the project setup is.
+This can be motivating for some authors, giving them a visual representation of their progress.
+AI Assistance on Demand:
+
+Even after dismissing a TODO, users should have the ability to ask the AI for assistance on that topic anytime. For instance, if they initially dismissed character development but later need assistance, the AI should be ready to jump in.
+Evolution Over Time:
+
+Recognizing that stories and projects evolve, the AI should be adaptable. If an author makes significant changes that diverge from the initial setup, the AI could suggest updating some project details or TODOs to align with the new direction.

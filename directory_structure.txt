@@ -3,6 +3,7 @@ In directory: .
 .gitignore
 directory_structure.py
 directory_structure.txt
+project_templates.json
 randkey.py
 README.md
 requirements.txt
@@ -23,8 +24,13 @@ registration_form.py
 __init__.py
 
 In directory: .\app\models
+activity.py
 chat_history.py
 chat_message.py
+collection.py
+notification.py
+relationships.py
+story_part.py
 user.py
 writing_project.py
 __init__.py
@@ -40,10 +46,16 @@ user.py
 In directory: .\app\routes\www
 chat.py
 project.py
+story.py
 user.py
 
 In directory: .\app\services
+activity_manager.py
+chat_history_manager.py
+chat_message_manager.py
+notification_manager.py
 project_manager.py
+story_manager.py
 token_manager.py
 user_manager.py
 __init__.py
@@ -56,7 +68,6 @@ base.html
 create_project.html
 dashboard.html
 delete_project.html
-index.html
 landing_page.html
 login.html
 profile.html
@@ -77,4 +88,5 @@ script.py.mako
 
 In directory: .\migrations\versions
 659ad5610d40_initial_migration.py
+aaf23a3614b7_implemented_core_models.py
 d3bd5e51645c_updated_user_model.py

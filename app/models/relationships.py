@@ -2,6 +2,31 @@
 
 from app import db
 
+
+project_template_tags_link = db.Table(
+    "project_template_tags",
+    db.Column(
+        "project_template_id",
+        db.Integer,
+        db.ForeignKey("project_template.id"),
+        primary_key=True,
+    ),
+    db.Column("tag_id", db.Integer, db.ForeignKey("tag.id"), primary_key=True),
+)
+
+
+project_template_genres_link = db.Table(
+    "project_template_genres",
+    db.Column(
+        "project_template_id",
+        db.Integer,
+        db.ForeignKey("project_template.id"),
+        primary_key=True,
+    ),
+    db.Column("genre_id", db.Integer, db.ForeignKey("genre.id"), primary_key=True),
+)
+
+
 collaborators_link = db.Table(
     "collaborators",
     db.Column(

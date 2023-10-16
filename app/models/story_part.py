@@ -21,6 +21,7 @@ class StoryPart(db.Model):
     # Attributes for the StoryPart
     title = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text, nullable=True)  # the content of the story part
+    imageref = db.Column(db.String(255), nullable=True)  # image reference
 
     # Relationship with Collections (assuming a story part can belong to multiple collections)
     collections = db.relationship(
