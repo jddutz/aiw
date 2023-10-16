@@ -2,7 +2,6 @@
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
-import app.db as db
 from app.models import WritingProject
 from app.services import project_manager, token_manager
 

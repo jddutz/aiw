@@ -42,3 +42,9 @@ class ProjectTemplate(db.Model):
 
     def get_structure(self):
         return json.loads(self.structure) if self.structure else {}
+
+    def set_links(self, links_list):
+        self.links = ";".join(links_list)
+
+    def get_links(self):
+        return self.links.split(";") if self.links else []
