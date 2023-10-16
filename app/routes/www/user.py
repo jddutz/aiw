@@ -33,7 +33,7 @@ def login():
             )
             if user:
                 # Set user as logged in
-                return redirect(url_for("user.home"))
+                return redirect(url_for("home"))
             else:
                 flash("Invalid username or password", "danger")
 
