@@ -1,4 +1,4 @@
-# app/routes.www.project.py
+# app/routes/www/project.py
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
@@ -26,6 +26,11 @@ def create_project():
             flash(str(e), "danger")
             return render_template("create_project.html")
     return render_template("create_project.html")
+
+
+@project_blueprint.route("/search", methods=["GET"])
+def search():
+    pass
 
 
 @project_blueprint.route("/<int:project_id>", methods=["GET"])

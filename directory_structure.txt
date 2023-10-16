@@ -1,0 +1,80 @@
+
+In directory: .
+.gitignore
+directory_structure.py
+directory_structure.txt
+randkey.py
+README.md
+requirements.txt
+
+In directory: .\app
+chat_gpt.py
+exceptions.py
+__init__.py
+
+In directory: .\app\db
+conversations.py
+projects.py
+__init__.py
+
+In directory: .\app\forms
+login_form.py
+registration_form.py
+__init__.py
+
+In directory: .\app\models
+chat_history.py
+chat_message.py
+user.py
+writing_project.py
+__init__.py
+
+In directory: .\app\routes
+__init__.py
+
+In directory: .\app\routes\api\v1
+chat.py
+project.py
+user.py
+
+In directory: .\app\routes\www
+chat.py
+project.py
+user.py
+
+In directory: .\app\services
+project_manager.py
+token_manager.py
+user_manager.py
+__init__.py
+
+In directory: .\app\static\css
+aiw.css
+
+In directory: .\app\templates
+base.html
+create_project.html
+dashboard.html
+delete_project.html
+index.html
+landing_page.html
+login.html
+profile.html
+project_detail.html
+register.html
+update_project.html
+_index_project_widget.html
+
+In directory: .\app\testing
+test_token_manager.py
+__init__.py
+
+In directory: .\migrations
+alembic.ini
+env.py
+README
+script.py.mako
+
+In directory: .\migrations\versions
+659ad5610d40_initial_migration.py
+d3bd5e51645c_updated_user_model.py

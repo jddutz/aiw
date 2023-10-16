@@ -1,4 +1,4 @@
-# app/routes.www.chat.py
+# app/routes/www/chat.py
 
 from flask import Blueprint
 
@@ -12,9 +12,3 @@ class InputData(BaseModel):
     conversation_id: Optional[str] = None
     project_id: Optional[str] = None
     input: str
-
-
-@chat_blueprint.route("/")
-def login():
-    # Logic...
-    pass
