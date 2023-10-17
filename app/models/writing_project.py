@@ -23,8 +23,17 @@ class WritingProject(db.Model):
         backref=db.backref("reviewing_projects", lazy=True),
     )
     visibility = db.Column(db.String(120), nullable=False)
+    project_template_id = db.Column(
+        db.Integer, db.ForeignKey("project_template.id"), nullable=True
+    )
     project_type = db.Column(db.String(120), nullable=False)
-    tags = db.Column(db.String(500), nullable=True)
+    tags = db.relationship(
+        "Tag",
+        secondary="writing_project_tags",
+        back_populates="writing_projects",
+    )
+    genre_id = db.Column(db.Integer, db.ForeignKey("genre.id"), nullable=True)
+    genre = db.relationship("Genre", backref=db.backref("writing_projects", lazy=True))
 
     # Relationship for StoryParts (no need to mention foreign key here as it's already handled in StoryPart model)
     stories = db.relationship("StoryPart", backref="writing_project", lazy=True)

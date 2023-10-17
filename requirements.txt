@@ -10,3 +10,4 @@ openai
 pytest
 bcrypt
 Flask-WTF
+wtforms-components

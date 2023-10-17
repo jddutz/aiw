@@ -17,19 +17,20 @@ from app.exceptions import (
 )
 
 
-from app.forms import RegistrationForm
+from app.forms import LoginForm, RegistrationForm
 
 user_blueprint = Blueprint("user", __name__)
 
 
 @user_blueprint.route("/login", methods=["GET", "POST"])
 def login():
-    # If POST, handle login logic
-    if request.method == "POST":
+    form = LoginForm()
+
+    if form.validate_on_submit():
         try:
             # Authenticate user (using a hypothetical validate_user function)
             user = user_manager.authenticate_user(
-                request.form.get("username"), request.form.get("password")
+                form.get("username"), form.get("password")
             )
             if user:
                 # Set user as logged in
@@ -51,8 +52,8 @@ def register():
     if form.validate_on_submit():
         try:
             # Create user
-            username = request.form.get("username")
-            password = request.form.get("password")
+            username = form.get("username")
+            password = form.get("password")
             user = user_manager.create_user(username, password)
             login_user(user)
             return redirect(url_for("home"))

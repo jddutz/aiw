@@ -1,3 +1,10 @@
+import os
+
+from dotenv import load_dotenv
+
+project_folder = os.path.expanduser("~/aiw")  # adjust as appropriate
+load_dotenv(os.path.join(project_folder, ".env"))
+
 import json
 from app import flask_app, db
 from app.models.project_template import ProjectTemplate

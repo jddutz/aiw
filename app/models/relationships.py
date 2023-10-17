@@ -14,7 +14,6 @@ project_template_tags_link = db.Table(
     db.Column("tag_id", db.Integer, db.ForeignKey("tag.id"), primary_key=True),
 )
 
-
 project_template_genres_link = db.Table(
     "project_template_genres",
     db.Column(
@@ -26,6 +25,16 @@ project_template_genres_link = db.Table(
     db.Column("genre_id", db.Integer, db.ForeignKey("genre.id"), primary_key=True),
 )
 
+writing_project_tags_link = db.Table(
+    "writing_project_tags",
+    db.Column(
+        "writing_project_id",
+        db.Integer,
+        db.ForeignKey("writing_project.id"),
+        primary_key=True,
+    ),
+    db.Column("tag_id", db.Integer, db.ForeignKey("tag.id"), primary_key=True),
+)
 
 collaborators_link = db.Table(
     "collaborators",

@@ -1,10 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>{{ project.title }}</h1>
-<p>{{ project.description }}</p>
-<p>Created on: {{ project.timestamp.strftime('%Y-%m-%d') }}</p>
-<a href="{{ url_for('project.update_project', project_id=project.id) }}">Edit</a>
-<form action="{{ url_for('project.delete_project', project_id=project.id) }}" method="post">
-    <input type="submit" value="Delete">
-</form>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ project.title }}</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ project.description }}</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Owner ID:</strong> {{ project.owner_id }}</li>
+                <li class="list-group-item"><strong>Visibility:</strong> {{ project.visibility }}</li>
+                <li class="list-group-item"><strong>Project Type:</strong> {{ project.project_type }}</li>
+                <li class="list-group-item"><strong>Tags:</strong> {% for tag in project.tags %} {{ tag.name }}{% if not
+                    loop.last %}, {% endif %}{% endfor %}</li>
+                <li class="list-group-item"><strong>Genre:</strong> {{ project.genre.name if project.genre else 'N/A' }}
+                </li>
+                <li class="list-group-item"><strong>Collaborators:</strong> {% for user in project.collaborators %} {{
+                    user.username }}{% if not loop.last %}, {% endif %}{% endfor %}</li>
+                <li class="list-group-item"><strong>Reviewers:</strong> {% for user in project.reviewers %} {{
+                    user.username }}{% if not loop.last %}, {% endif %}{% endfor %}</li>
+                <li class="list-group-item"><strong>Created on:</strong> {{ project.created.strftime('%Y-%m-%d') }}</li>
+                <li class="list-group-item"><strong>Last Modified:</strong> {{
+                    project.last_modified.strftime('%Y-%m-%d') }}</li>
+            </ul>
+            <div class="mt-3">
+                <a href="{{ url_for('project.update_project', project_id=project.id) }}"
+                    class="btn btn-primary">Edit</a>
+                <form action="{{ url_for('project.delete_project', project_id=project.id) }}" method="post"
+                    class="d-inline">
+                    <input type="submit" value="Delete" class="btn btn-danger">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,7 +1,10 @@
 # app/models/tag.py
 
 from app import db
-from app.models.relationships import project_template_tags_link
+from app.models.relationships import (
+    project_template_tags_link,
+    writing_project_tags_link,
+)
 
 
 class Tag(db.Model):
@@ -11,5 +14,10 @@ class Tag(db.Model):
     project_templates = db.relationship(
         "ProjectTemplate",
         secondary=project_template_tags_link,
+        back_populates="tags",
+    )
+    writing_projects = db.relationship(
+        "WritingProject",
+        secondary=writing_project_tags_link,
         back_populates="tags",
     )

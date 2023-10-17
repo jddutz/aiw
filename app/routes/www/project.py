@@ -2,46 +2,50 @@
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
-from app.models import WritingProject
+from flask_login import current_user
+from app.models import WritingProject, ProjectTemplate
 from app.services import project_manager, token_manager
+from app.forms import NewProjectForm
 
 project_blueprint = Blueprint("project", __name__)
 
 
 @project_blueprint.route("/create", methods=["GET", "POST"])
 def new():
-    if request.method == "POST":
+    form = NewProjectForm()
+
+    templates_by_category = {}
+    for template in ProjectTemplate.query.all():
+        templates_by_category.setdefault(template.category, []).append(
+            (str(template.id), template.name)
+        )
+
+    # Convert the dictionary to the list format
+    choices = [(key, value) for key, value in templates_by_category.items()]
+    form.project_template.choices = choices
+
+    if form.validate_on_submit():
+        # Convert form data as necessary
         project_info = {
-            "title": request.form.get("title"),
-            "description": request.form.get("description"),
-            # Any other fields that you want to get from the form can be added here
+            "title": form.title.data,
+            "description": form.description.data,
+            "owner_id": current_user.id,  # Assuming you're using Flask-Login or similar
+            "visibility": form.visibility.data,
+            "project_type": form.project_template.data,  # This would be the ID of the selected project template
+            "tags": form.tags.data,  # Assuming this would be a list of tag strings, or perhaps tag IDs
+            # The following fields will likely not be part of the form, but I'm including them for completeness
+            "created": datetime.utcnow(),
+            "last_modified": datetime.utcnow(),
         }
 
-        # Create a new writing project
-        try:
-            new_project = project_manager.create_new_project(project_info)
-        except Exception as e:
-            flash(str(e), "danger")
-            return render_template("create_project.html")
-
-        # Optionally, create a new project template based on form input if applicable
-        # Assuming you have relevant form fields for the template's attributes like 'name', 'description', etc.
-        template_info = {
-            "name": request.form.get("template_name"),
-            "description": request.form.get("template_description"),
-            # ... [Other template fields]
-            # Handle tags, genres, etc. appropriately if they are included in the form
-        }
-        try:
-            new_template = ProjectTemplateManager.create_template(template_info)
-            flash("Project template successfully created!", "success")
-        except Exception as e:
-            flash(f"Error creating project template: {str(e)}", "danger")
+        # Using project_manager to create the project
+        new_project = project_manager.create_new_project(project_info)
 
         flash("Project successfully created!", "success")
         return redirect(url_for("project.project_detail", project_id=new_project.id))
 
-    return render_template("create_project.html")
+    # If GET, show login page
+    return render_template("create_project.html", form=form)
 
 
 @project_blueprint.route("/search", methods=["GET"])
