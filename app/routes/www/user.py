@@ -58,13 +58,14 @@ def register():
             user = user_manager.create_user(username, password)
             login_user(user)
             return redirect(url_for("home"))
-        except (
-            InvalidUsernameError,
-            InvalidPasswordError,
-            UsernameExistsError,
-            EmailExistsError,
-        ) as e:
-            flash(e.message, "danger")
+        except InvalidUsernameError as e:
+            flash(f"Invalid username: {e.message}", "danger")
+        except InvalidPasswordError as e:
+            flash(f"Invalid password: {e.message}", "danger")
+        except UsernameExistsError as e:
+            flash(f"Username already exists: {e.message}", "danger")
+        except EmailExistsError as e:
+            flash(f"Email already exists: {e.message}", "danger")
 
     # If GET, show sign up page
     return render_template("register.html", form=form)
