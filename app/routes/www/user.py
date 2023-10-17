@@ -28,21 +28,22 @@ def login():
 
     if form.validate_on_submit():
         try:
-            # Authenticate user (using a hypothetical validate_user function)
-            user = user_manager.authenticate_user(
-                form.get("username"), form.get("password")
-            )
+            # Authenticate user (using a hypothetical authenticate_user function)
+            username = form.username.data
+            password = form.password.data
+            user = user_manager.authenticate_user(username, password)
             if user:
-                # Set user as logged in
+                login_user(
+                    user
+                )  # Make sure you also call login_user() to log the user in
                 return redirect(url_for("home"))
             else:
                 flash("Invalid username or password", "danger")
-
         except AuthenticationError as e:
             flash(e.message, "danger")
 
     # If GET, show login page
-    return render_template("login.html")
+    return render_template("login.html", form=form)
 
 
 @user_blueprint.route("/register", methods=["GET", "POST"])
@@ -52,8 +53,8 @@ def register():
     if form.validate_on_submit():
         try:
             # Create user
-            username = form.get("username")
-            password = form.get("password")
+            username = form.username.data
+            password = form.password.data
             user = user_manager.create_user(username, password)
             login_user(user)
             return redirect(url_for("home"))
