@@ -39,7 +39,9 @@ class WritingProject(db.Model):
     stories = db.relationship("StoryPart", backref="writing_project", lazy=True)
 
     # Relationship for Collections
-    collections = db.relationship("Collection", backref="writing_project", lazy=True)
+    collections = db.relationship(
+        "StoryPartCollection", backref="writing_project", lazy=True
+    )
 
     created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     last_modified = db.Column(db.DateTime, index=True, default=datetime.utcnow)

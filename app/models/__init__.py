@@ -16,6 +16,7 @@ from .tag import Tag
 from .project_template import ProjectTemplate
 from .writing_project import WritingProject
 from .story_part import StoryPart
-from .collection import Collection
 from .chat_message import ChatMessage
 from .chat_history import ChatHistory
+from .chat_system_message import ChatSystemMessage
+from .story_part_collection import StoryPartCollection

@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ url_for('static', filename='aiw.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aiw.css') }}">
     <title>{% block title %}{% endblock %}</title>
     <!-- Add other meta tags, stylesheets, scripts as needed -->
 </head>
@@ -52,6 +54,24 @@
         {% block content %}
         {% endblock %}
     </div>
+
+    {% if ai_toolbox_actions %}
+    <button class="fab" id="aiToolboxButton">
+        <i class="fas fa-robot"></i>
+    </button>
+    <script src="{{ url_for('static', filename='js/ai_toolbox.js') }}"></script>
+    <div id="aiContextMenu">
+        {% for action in ai_toolbox_actions %}
+        <div class="contextMenuItem" onclick="{{ action.js_function }}()" class="contextMenuItem">
+            {% if action.icon %}<i class="{{ action.icon }}"></i>{% endif %}
+            {{ action.caption }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block ai_toolbox_scripts %}{% endblock %}
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

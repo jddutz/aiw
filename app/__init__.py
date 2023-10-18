@@ -37,4 +37,9 @@ login_manager = LoginManager()
 login_manager.login_view = "user.login"
 login_manager.init_app(flask_app)
 
+# Initialize OpenAI API
+import openai
+
+openai.api_key = os.getenv("OPENAI_API_KEY", None)
+
 import app.routes

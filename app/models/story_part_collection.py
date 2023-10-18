@@ -4,7 +4,9 @@ from app import db
 from app.models.relationships import storypart_collection_link
 
 
-class Collection(db.Model):
+class StoryPartCollection(db.Model):
+    __tablename__ = "collection"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     # Foreign key linking back to WritingProject

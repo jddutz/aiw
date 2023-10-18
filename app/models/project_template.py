@@ -13,7 +13,7 @@ from app.models.relationships import (
 class ProjectTemplate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(255), nullable=False)
-    name = db.Column(db.String(255), unique=True, nullable=False)
+    template_name = db.Column("name", db.String(255), unique=True, nullable=False)
     description = db.Column(db.Text, nullable=False)
     methodology = db.Column(db.Text, nullable=False)
     length = db.Column(db.String(255), nullable=False)

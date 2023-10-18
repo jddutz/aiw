@@ -25,7 +25,7 @@ class StoryPart(db.Model):
 
     # Relationship with Collections (assuming a story part can belong to multiple collections)
     collections = db.relationship(
-        "Collection",
+        "StoryPartCollection",
         secondary="storypart_collection_link",
         back_populates="story_parts",
     )

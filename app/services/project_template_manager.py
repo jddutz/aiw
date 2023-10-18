@@ -10,6 +10,27 @@ from app import db
 from app.models import ProjectTemplate, Tag, Genre
 
 
+CACHED_CATEGORIES = None
+
+
+def load_categories():
+    global CACHED_CATEGORIES
+
+    # Use cached categories if available
+    if CACHED_CATEGORIES:
+        return CACHED_CATEGORIES
+
+    categories = (
+        db.session.query(ProjectTemplate.category)
+        .distinct()
+        .order_by(ProjectTemplate.category.asc())
+        .all()
+    )
+    # Convert categories from list of tuples to a list of strings
+    CACHED_CATEGORIES = [(category[0], category[0]) for category in categories]
+    return CACHED_CATEGORIES
+
+
 def create_template(data):
     tags = [Tag.query.get_or_404(tag_id) for tag_id in data.get("tags", [])]
     genres = [Genre.query.get_or_404(genre_id) for genre_id in data.get("genres", [])]

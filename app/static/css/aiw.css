@@ -1,0 +1,62 @@
+/* app/static/css/aiw.css */
+/* primary color = rgb(0, 60, 255); */
+
+.fab {
+    position: fixed;
+    top: 60px;
+    /* Adjust these values as needed */
+    right: 40px;
+    z-index: 1000;
+    /* Ensure it stays on top of other elements */
+    border: none;
+    outline: none;
+    background-color: #efefef;
+    color: rgb(0, 60, 255);
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 50%;
+    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.fab-active {
+    border: none;
+    background-color: rgb(0, 60, 255);
+    color: #efefef;
+}
+
+.fab:hover {
+    border: none;
+    background-color: rgb(0, 60, 255);
+    color: #efefef;
+    /* Slightly darker shade for hover effect */
+}
+
+.fab:focus {
+    outline: none;
+}
+
+#aiContextMenu {
+    display: none;
+    position: fixed;
+    top: 95px;
+    right: 40px;
+    z-index: 999;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    width: 200px;
+}
+
+.contextMenuItem {
+    cursor: pointer;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f1f1f1;
+    transition: background-color 0.3s;
+}
+
+.contextMenuItem:hover {
+    background-color: #007bff;
+    color: white;
+}
