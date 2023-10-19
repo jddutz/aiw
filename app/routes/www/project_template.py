@@ -6,19 +6,17 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 from app import db
 from app.models import ProjectTemplate
 from app.services import project_template_manager
-from app.forms.project_template_edit_form import EditProjectTemplateForm
+from app.forms.project_template_edit_form import ProjectTemplateEditForm
 
 project_template_blueprint = Blueprint("project_template", __name__)
 
 
 @project_template_blueprint.route("/", methods=["GET"])
 def index():
-    project_templates = (
-        ProjectTemplate.query.all()
-    )  # Fetch all templates from the database
+    data = ProjectTemplate.query.all()  # Fetch all templates from the database
     return render_template(
         "project_template_index.html",
-        project_templates=project_templates,
+        project_templates=data,
         show_ai_toolbox=True,
     )
 
@@ -57,12 +55,12 @@ def create():
 
 @project_template_blueprint.route("/<int:project_template_id>", methods=["GET"])
 def detail(project_template_id):
-    project_template = ProjectTemplate.query.get_or_404(
+    data = ProjectTemplate.query.get_or_404(
         project_template_id
     )  # Fetch project_template by ID or return 404
     return render_template(
         "project_template_detail.html",
-        project_template=project_template,
+        project_template=data,
         show_ai_toolbox=True,
     )
 
@@ -72,38 +70,41 @@ def detail(project_template_id):
 )
 def edit(project_template_id):
     # Retrieve the project project_template by its ID
-    project_template = ProjectTemplate.query.get_or_404(project_template_id)
+    data = ProjectTemplate.query.get_or_404(project_template_id)
 
-    form = EditProjectTemplateForm(obj=project_template)
+    form = ProjectTemplateEditForm(obj=data)
     form.category.choices = project_template_manager.load_categories()
 
     if form.validate_on_submit():
         # Update the project project_template's fields based on the form data
-        form.populate_obj(project_template)
+        form.populate_obj(data)
 
         # Save the changes to the database
         db.session.commit()
 
-        flash("Project project_template updated successfully!", "success")
+        flash(
+            f"Project Template, {data.project_template_name} updated successfully!",
+            "success",
+        )
         return redirect(url_for("project_template.list"))
 
     ai_toolbox_actions = [
         {
             "caption": "Update Description",
             "icon": "fas fa-comment",
-            "js_function": "update_description",
+            "js_function": "update_description()",
         },
         {
             "caption": "Update Methodology",
             "icon": "fas fa-comment",
-            "js_function": "update_methodology",
+            "js_function": "update_methodology()",
         },
     ]
 
     return render_template(
         "project_template_edit.html",
         form=form,
-        project_template=project_template,
+        project_template=data,
         show_ai_toolbox=True,
         ai_toolbox_actions=ai_toolbox_actions,
     )

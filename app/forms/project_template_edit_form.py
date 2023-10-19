@@ -5,7 +5,7 @@ from wtforms import StringField, TextAreaField, SelectField, IntegerField, Submi
 from wtforms.validators import DataRequired, Length, Optional
 
 
-class EditProjectTemplateForm(FlaskForm):
+class ProjectTemplateEditForm(FlaskForm):
     category = SelectField("Category", validators=[DataRequired()])
     project_template_name = StringField(
         "Template Name", validators=[DataRequired(), Length(min=2, max=255)]

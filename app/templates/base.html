@@ -26,7 +26,6 @@
                     <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('project_template.index') }}">Templates</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Pricing</a>
@@ -47,7 +46,7 @@
             Show Chat
         </div>
         {% for action in ai_toolbox_actions %}
-        <div class="contextMenuItem" onclick="{{ action.js_function }}()">
+        <div class="contextMenuItem" onclick="{{ action.js_function }}">
             {% if action.icon %}<i class="{{ action.icon }}"></i>{% endif %}
             {{ action.caption }}
         </div>

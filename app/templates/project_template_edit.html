@@ -62,6 +62,9 @@
         </div>
 
         <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        <div class="mt-4">
+            <a href="{{ url_for('project_template.index') }}" class="btn btn-secondary">Back to Templates</a>
+        </div>
     </form>
 </div>
 {% endblock %}

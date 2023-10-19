@@ -15,11 +15,13 @@ from app.routes.www.user import user_blueprint
 from app.routes.www.project import project_blueprint
 from app.routes.www.story import story_blueprint
 from app.routes.www.project_template import project_template_blueprint
+from app.routes.www.help_context import help_context_blueprint
 
 flask_app.register_blueprint(user_blueprint, url_prefix="/user")
 flask_app.register_blueprint(project_blueprint, url_prefix="/project")
 flask_app.register_blueprint(story_blueprint, url_prefix="/story")
 flask_app.register_blueprint(project_template_blueprint, url_prefix="/project_template")
+flask_app.register_blueprint(help_context_blueprint, url_prefix="/help_context")
 
 # API blueprints
 from app.routes.api.v1.user import user_api_v1

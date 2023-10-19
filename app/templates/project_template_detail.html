@@ -3,11 +3,10 @@
 
 <div class="container mt-5">
     <div class="d-flex align-items-start">
-        <a href="{{ url_for('project_template.edit', project_template_id=project_template.id) }}"
-            class="btn btn-white btn-sm">
+        <h2 class="mb-0">{{ project_template.project_template_name }}</h2>
+        <a href="{{ url_for('project_template.edit', project_template_id=project_template.id) }}" class="btn btn-white">
             <i class="bi bi-pencil text-dark"></i>
         </a>
-        <h2 class="mb-0">{{ project_template.project_template_name }}</h2>
     </div>
     <hr>
 
@@ -62,7 +61,6 @@
 
     <div class="mt-4">
         <a href="{{ url_for('project_template.index') }}" class="btn btn-secondary">Back to Templates</a>
-        <!-- Additional buttons or actions for edit, delete, etc. can be added here -->
     </div>
 </div>
 

@@ -34,11 +34,12 @@ class ProjectTemplate(db.Model):
     structure = db.Column(db.Text, nullable=True)  # Stores serialized JSON structure
 
     imageref = db.Column(db.String(255))
+    usage_count = db.Column(db.Integer, default=0)
+
     created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     modified = db.Column(
         db.TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow
     )
-    usage_count = db.Column(db.Integer, default=0)
 
     def set_structure(self, structure_dict):
         self.structure = json.dumps(structure_dict)

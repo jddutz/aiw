@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    {# Decide the heading based on the presence of help_context #}
+    <h2>{{ "Edit Help Context" if help_context else "Create Help Context" }}</h2>
+
+    {# Decide the form's action based on the presence of help_context #}
+    <form
+        action="{{ url_for('help_context.edit', help_context_id=help_context.id) if help_context else url_for('help_context.create') }}"
+        method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label for="help_context_id">Help Context ID</label>
+            {{ form.context_id(class="form-control") }}
+        </div>
+
+        {% if form.content.errors %}
+        <span class="text-danger">{{ form.content.errors[0] }}</span>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="methodology">Content</label>
+            {{ form.content(class="form-control", rows=15) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{{ "Update" if help_context else "Create" }}</button>
+
+        <div class="mt-4">
+            <a href="{{ url_for('help_context.index') }}" class="btn btn-secondary">Back to Index</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/toolbox/help_context_edit.js') }}"></script>
+{% endblock %}
