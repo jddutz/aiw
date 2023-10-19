@@ -22,13 +22,27 @@ def new_conversation():
 
     messages = [{"role": "system", "content": instructional_message}]
 
+    # Help context id is used to query the system message table for additional context information
+    if request.is_json and "help_context_id" in request.json:
+        help_context_id = request.json.get("help_context_id")
+        if help_context_id:
+            help_context_message = system_messages.get_help_context_message()
+            help_context = system_messages.get_help_context(help_context_id)
+            messages.append(
+                {
+                    "role": "system",
+                    "content": f"{help_context_message}: {help_context}",
+                }
+            )
+
     # Retrieve context from the request body
     context_message = system_messages.get_context_message()
 
-    if request.is_json and "context" in request.json:
-        context = request.json.get("context")
-        context_text = f"{context_message}: {context}"
-        messages.append({"role": "system", "content": context_text})
+    if request.is_json and "page_context" in request.json:
+        page_context = request.json.get("page_context")
+        messages.append(
+            {"role": "system", "content": f"{context_message}: {page_context}"}
+        )
 
     # Append instructions to the AI to greet the user
     messages.append(
@@ -38,9 +52,15 @@ def new_conversation():
         }
     )
 
+    # Check the current temperature
+    if "temperature" in request.json:
+        temperature = request.json["temperature"]
+    else:
+        temperature = 0.9
+
     # Send the messages to OpenAI
     openai_response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo", messages=messages
+        model="gpt-3.5-turbo", messages=messages, temperature=temperature
     )
 
     ai_message = openai_response.choices[0].message["content"].strip()
@@ -63,28 +83,46 @@ def get_conversation(conversation_id):
 @chat_api_v1.route("/", methods=["POST"])
 @chat_api_v1.route("/<int:conversation_id>", methods=["POST"])
 def send_message(conversation_id=None):
+    if not request.is_json:
+        return jsonify({"error": "Request mimetype must be application/json"}), 400
+
+    if not "content" in request.json:
+        return jsonify({"error": "Message content is required"}), 400
+
+    user_message = request.json.get("content")
+
     chat_history = None
     if conversation_id:
         chat_history = ChatHistory.query.get(conversation_id)
         if chat_history is None:
             return jsonify({"error": "Conversation not found"}), 404
 
-    user_message = request.json.get("content")
-    if not user_message:
-        return jsonify({"error": "Message content required"}), 400
-
     # Compile recent messages for the AI and fetch the system instructional message
     instructional_message = system_messages.get_instructions()
 
     messages = [{"role": "system", "content": instructional_message}]
 
+    # Help context id is used to query the system message table for additional context information
+    if "help_context_id" in request.json:
+        help_context_id = request.json.get("help_context_id")
+        if help_context_id:
+            help_context_message = system_messages.get_help_context_message()
+            help_context = system_messages.get_help_context(help_context_id)
+            messages.append(
+                {
+                    "role": "system",
+                    "content": f"{help_context_message}: {help_context}",
+                }
+            )
+
     # Retrieve context from the request body
     context_message = system_messages.get_context_message()
 
-    if request.is_json and "context" in request.json:
-        context = request.json.get("context")
-        context_text = f"{context_message}: {context}"
-        messages.append({"role": "system", "content": context_text})
+    if "page_context" in request.json:
+        page_context = request.json.get("page_context")
+        messages.append(
+            {"role": "system", "content": f"{context_message}: {page_context}"}
+        )
 
     # If no conversation_id is provided, create a new ChatHistory
     if chat_history:
@@ -104,8 +142,16 @@ def send_message(conversation_id=None):
     # Add the current user message
     messages.append({"role": "user", "content": user_message})
 
+    # Check the current temperature
+    if "temperature" in request.json:
+        temperature = request.json["temperature"]
+    else:
+        temperature = 0.9
+
     # Send the messages to OpenAI
-    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages, temperature=temperature
+    )
 
     ai_message = response.choices[0].message["content"].strip()
 

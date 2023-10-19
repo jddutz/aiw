@@ -1,5 +1,9 @@
 // app/static/js/ai_toolbox.js
 
+// Find the div with id = 'aiw-content'
+let aiwContentDiv = document.getElementById('aiw-content');
+if (!aiwContentDiv) help_context_id = null; else help_context_id = aiwContentDiv.getAttribute('data-help-context-id');
+
 var currentConversationId = null;
 
 var chatMessageContainer = document.getElementById('chatMessageContainer');
@@ -75,14 +79,8 @@ function renderChatMessages(messages) {
  * Extract the contents of the current page and return it as plain text
  * for use as context in REST API calls.
  */
-function loadContext() {
-    // Find the div with id = 'aiw-content'
-    let divElement = document.getElementById('aiw-content');
-
-    if (!divElement) {
-        console.error("Couldn't find a div with id 'aiw-content'.");
-        return '';  // Return an empty string if the div isn't found
-    }
+function loadPageContext() {
+    if (!aiwContentDiv) return '';
 
     let textValues = [];
 
@@ -104,13 +102,9 @@ function loadContext() {
         }
     }
 
-    extractTextFromNode(divElement);  // Start extraction from the main div
+    extractTextFromNode(aiwContentDiv);  // Start extraction from the main div
 
-    return_value = textValues.join('\n');  // Join the list with newline and return
-
-    console.log(return_value);
-
-    return return_value;
+    return textValues.join('\n');  // Join the list with newline and return
 }
 
 
@@ -141,9 +135,12 @@ function sendMessage() {
     }
 
     var messageData = {
-        content: messageContent,
-        context: loadContext()
+        help_context_id: help_context_id,
+        page_context: loadPageContext(),
+        content: messageContent
     };
+
+    console.log(messageData);
 
     fetch(endpoint, {
         method: 'POST',
@@ -178,7 +175,8 @@ function chat() {
     // If there's no current conversation, send a starting message
     if (!currentConversationId) {
         let data = {
-            context: loadContext()
+            help_context_id: help_context_id,
+            page_context: loadPageContext()
         };
 
         fetch('/api/v1/chat/new', {

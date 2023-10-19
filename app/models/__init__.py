@@ -10,6 +10,7 @@ from .relationships import (
 
 from .user import User
 from .activity import Activity
+from .help_context import HelpContext
 from .notification import Notification
 from .genre import Genre
 from .tag import Tag
