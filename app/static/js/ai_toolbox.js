@@ -1,7 +1,13 @@
 // app/static/js/ai_toolbox.js
 
-// Floating Action Button + Context Menu
-document.getElementById('aiToolboxButton').addEventListener('click', function () {
+var currentConversationId = null;
+
+var chatMessageContainer = document.getElementById('chatMessageContainer');
+
+/**
+ * Toggles display of the context menu and floating action button
+ */
+function toggleContextMenu() {
     var fab = document.getElementById('aiToolboxButton');
     var contextMenu = document.getElementById('aiContextMenu');
 
@@ -12,66 +18,213 @@ document.getElementById('aiToolboxButton').addEventListener('click', function ()
         contextMenu.style.display = 'none';
         fab.classList.remove('fab-active');
     }
-});
-
-// Common toolbox functions
+}
 
 /**
- * Make an AJAX POST request.
- *
- * @param {string} url - The URL to send the request.
- * @param {Object} data - The data to send as JSON.
- * @param {Function} successCallback - Function to execute on a successful response.
- * @param {Function} errorCallback - Function to execute on a failed response.
+ * Opens the chat interface and hides the context menu.
  */
-function ajaxPost(url, data, successCallback, errorCallback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
-                successCallback(response);
+function openChatInterface() {
+    var chatInterface = document.getElementById('chatInterface');
+    var contextMenu = document.getElementById('aiContextMenu');
+
+    chatInterface.style.display = 'block';
+    contextMenu.style.display = 'none';
+}
+
+/**
+ * Closes the chat interface and shows the context menu if showContextMenu is true.
+ */
+function closeChatInterface(showContextMenu) {
+    var chatInterface = document.getElementById('chatInterface');
+    var contextMenu = document.getElementById('aiContextMenu');
+
+    chatInterface.style.display = 'none';
+
+    if (showContextMenu) {
+        contextMenu.style.display = 'block';
+    }
+}
+
+/**
+ *  Renders a single chat message to the chat interface.
+ */
+function appendChatMessage(message) {
+    var newMessageDiv = document.createElement('div');
+
+    newMessageDiv.className = "chat_message_" + message.role.toLowerCase();
+    newMessageDiv.innerText = message.content;
+
+    chatMessageContainer.appendChild(newMessageDiv);
+}
+
+/**
+ * Renders chat messages to the chat interface.
+ */
+function renderChatMessages(messages) {
+    // Clear the chat messages container
+    chatMessageContainer.innerHTML = '';
+
+    for (let i = 0; i < messages.length; i++) {
+        appendChatMessage(messages[i]);
+    }
+
+    chatMessageContainer.scrollTop = chatMessageContainer.scrollHeight;
+}
+
+/**
+ * Extract the contents of the current page and return it as plain text
+ * for use as context in REST API calls.
+ */
+function loadContext() {
+    // Find the div with id = 'aiw-content'
+    let divElement = document.getElementById('aiw-content');
+
+    if (!divElement) {
+        console.error("Couldn't find a div with id 'aiw-content'.");
+        return '';  // Return an empty string if the div isn't found
+    }
+
+    let textValues = [];
+
+    function extractTextFromNode(node) {
+        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() !== "") {
+            // If the current node is a text node and not empty, push its value to the list
+            textValues.push(node.nodeValue.trim());
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            // If the current node is an element node
+            if (node.tagName.toLowerCase() === 'textarea' || (node.tagName.toLowerCase() === 'input' && ['text', 'number', 'password', 'email', 'search'].includes(node.type))) {
+                // If the element is a textarea or specific type of input, push its value
+                textValues.push(node.value);
             } else {
-                errorCallback(xhr);
+                // Otherwise, loop through its children recursively
+                for (let child of node.childNodes) {
+                    extractTextFromNode(child);
+                }
             }
         }
-    };
-    xhr.send(JSON.stringify(data));
+    }
+
+    extractTextFromNode(divElement);  // Start extraction from the main div
+
+    return_value = textValues.join('\n');  // Join the list with newline and return
+
+    console.log(return_value);
+
+    return return_value;
 }
 
-/**
- * Display an AI-generated message in an alert.
- *
- * @param {Object} aiResponse - The AI's response object.
- */
-function displayAIResponse(aiResponse) {
-    alert(aiResponse.content);
-}
 
 /**
- * Toolbox function displays an alert with an AI greeting.
+ * Compiles a chat API request and sends it to the server.
  */
-function say_hello() {
+function sendMessage() {
+    var chatInput = document.getElementById('chatInput');
+    var messageContent = chatInput.value.trim();
+
+    if (!messageContent) {
+        alert('Please type a message before sending.');
+        return;
+    }
+
+    chatInput.value = ''; // Clear the input box
+
+    appendChatMessage({
+        role: 'USER',
+        content: messageContent
+    });
+
+    chatMessageContainer.scrollTop = chatMessageContainer.scrollHeight;
+
+    var endpoint = '/api/v1/chat/';
+    if (currentConversationId) {
+        endpoint += currentConversationId;
+    }
+
     var messageData = {
-        content: "Hello, AI! Can you greet our user?"
+        content: messageContent,
+        context: loadContext()
     };
 
-    ajaxPost(
-        '/api/v1/chat/',
-        messageData,
-        function (response) { // Success callback
-            displayAIResponse(response);
-        },
-        function (error) { // Error callback
+    fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(messageData),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            currentConversationId = data.conversation_id || currentConversationId;
+            renderChatMessages(data.messages);
+            chatInput.value = ''; // Clear the input box
+        })
+        .catch(error => {
             console.error('Error:', error);
             alert('Sorry, something went wrong.');
-        }
-    );
+        });
 }
 
+/**
+ * Toolbox function to start a new chat conversation
+ * or continue a previous one.
+ */
+function chat() {
+    // If there's no current conversation, send a starting message
+    if (!currentConversationId) {
+        let data = {
+            context: loadContext()
+        };
+
+        fetch('/api/v1/chat/new', {
+            method: 'POST',
+            body: JSON.stringify(data), // Convert the data object to a JSON string
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json()) // Convert the response to a JavaScript object
+            .then(data => {
+                currentConversationId = data.id;
+                renderChatMessages(data.messages);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Sorry, something went wrong starting the chat.');
+            });
+    }
+
+    openChatInterface();
+}
+
+
+/**
+ * Toolbox function to start a help chat conversation
+ */
 function help_chat() {
     // This can be updated similarly when you implement the chat feature
     alert('Help chat');
 }
+
+
+// EVENT LISTENERS
+
+// Floating Action Button + Context Menu event listener
+document.getElementById('aiToolboxButton').addEventListener('click', toggleContextMenu);
+
+// chatInterface button event listener
+document.getElementById('sendButton').addEventListener('click', sendMessage);
+
+// chatInput event listener to send message on Enter key
+document.getElementById('chatInput').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // Prevent the default behavior (newline in textarea, form submission, etc.)
+        sendMessage();  // Call the function to send the message
+    }
+});

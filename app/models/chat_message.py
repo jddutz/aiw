@@ -48,7 +48,7 @@ class ChatMessage(db.Model):
             "id": self.id,
             "role": self.role,
             "content": self.content,
-            "created_at": self.created_at.isoformat(),
+            "created_at": self.created_at.isoformat() if self.created_at else "",
             "visibility": self.visibility,
         }
 

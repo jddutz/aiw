@@ -1,1 +1,1 @@
-// app/static/js/toolbox/edit_project_template.js
+// app/static/js/toolbox/project_template_edit.js

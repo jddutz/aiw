@@ -5,6 +5,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_caching import Cache
 
 flask_app = Flask(__name__)
 flask_app.secret_key = os.getenv("AIW_FLASK_SECRET_KEY", None)
@@ -29,6 +30,8 @@ SQLALCHEMY_DATABASE_URI = f"mysql+mysqlconnector://{mysql_user}:{mysql_password}
 flask_app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 flask_app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+flask_app.config["CACHE_TYPE"] = "SimpleCache"
+flask_app.config["CACHE_DEFAULT_TIMEOUT"] = 3600
 
 db = SQLAlchemy(flask_app)
 migrate = Migrate(flask_app, db)
@@ -36,6 +39,9 @@ migrate = Migrate(flask_app, db)
 login_manager = LoginManager()
 login_manager.login_view = "user.login"
 login_manager.init_app(flask_app)
+
+# Initialize cache
+cache = Cache(flask_app)
 
 # Initialize OpenAI API
 import openai

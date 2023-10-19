@@ -4,7 +4,7 @@
 <div class="container mt-5">
     <h2>Edit Project Template</h2>
 
-    <form action="{{ url_for('template.edit', template_id=template.id) }}" method="post">
+    <form action="{{ url_for('project_template.edit', project_template_id=project_template.id) }}" method="post">
         {{ form.hidden_tag() }}
 
         <div class="form-group">
@@ -22,18 +22,18 @@
         </div>
 
         <div class="form-group">
-            <label for="template_name">Template Name</label>
-            {{ form.template_name(class="form-control") }}
+            <label for="project_template_name">Template Name</label>
+            {{ form.project_template_name(class="form-control") }}
         </div>
 
         <div class="form-group">
             <label for="description">Description</label>
-            {{ form.description(class="form-control", rows=4) }}
+            {{ form.description(class="form-control", rows=5) }}
         </div>
 
         <div class="form-group">
             <label for="methodology">Methodology</label>
-            {{ form.methodology(class="form-control", rows=4) }}
+            {{ form.methodology(class="form-control", rows=10) }}
         </div>
 
         <div class="form-group">
@@ -67,5 +67,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/toolbox/edit_project_template.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toolbox/project_template_edit.js') }}"></script>
 {% endblock %}

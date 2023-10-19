@@ -26,7 +26,7 @@
                     <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Features</a>
+                    <a class="nav-link" href="{{ url_for('project_template.index') }}">Templates</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Pricing</a>
@@ -37,10 +37,44 @@
             </ul>
         </div>
     </nav>
+    {% if show_ai_toolbox %}
+    <button class="fab" id="aiToolboxButton">
+        <i class="fas fa-robot"></i>
+    </button>
+    <div id="aiContextMenu" class="floating">
+        <div class="contextMenuItem" onclick="chat()">
+            <i class="fas fa-comment"></i>
+            Show Chat
+        </div>
+        {% for action in ai_toolbox_actions %}
+        <div class="contextMenuItem" onclick="{{ action.js_function }}()">
+            {% if action.icon %}<i class="{{ action.icon }}"></i>{% endif %}
+            {{ action.caption }}
+        </div>
+        {% endfor %}
+        <div class="contextMenuItem" onclick="help_chat()">
+            <i class="fas fa-comment"></i>
+            Help
+        </div>
+    </div>
+    <!-- Chat Interface -->
+    <div id="chatInterface" class="floating flex-column align-items-end" style="display:none;">
+        <button id="closeChatButton" class="close-chat-btn" onclick="closeChatInterface(false)">X</button>
+        <div id="chatMessageContainer">
+            <!-- Chat messages will be appended here -->
+        </div>
+        <div id="chatInputContainer">
+            <input type="text" id="chatInput" placeholder="Type your message..." />
+            <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    {% endif %}
+
+    {% block ai_toolbox_scripts %}{% endblock %}
     <div class="container mt-3">
-        <!-- Flash messages start -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
+        <!-- Flash messages -->
         <div class="flash-messages">
             {% for category, message in messages %}
             <div class="alert alert-{{ category }}">
@@ -50,28 +84,13 @@
         </div>
         {% endif %}
         {% endwith %}
-        <!-- Flash messages end -->
-        {% block content %}
+        <div id="aiw-content">
+            {% block content %}
+        </div>
         {% endblock %}
     </div>
 
-    {% if ai_toolbox_actions %}
-    <button class="fab" id="aiToolboxButton">
-        <i class="fas fa-robot"></i>
-    </button>
     <script src="{{ url_for('static', filename='js/ai_toolbox.js') }}"></script>
-    <div id="aiContextMenu">
-        {% for action in ai_toolbox_actions %}
-        <div class="contextMenuItem" onclick="{{ action.js_function }}()" class="contextMenuItem">
-            {% if action.icon %}<i class="{{ action.icon }}"></i>{% endif %}
-            {{ action.caption }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    {% block ai_toolbox_scripts %}{% endblock %}
-
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

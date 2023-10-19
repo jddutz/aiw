@@ -36,9 +36,8 @@
     outline: none;
 }
 
-#aiContextMenu {
+.floating {
     display: none;
-    position: fixed;
     top: 95px;
     right: 40px;
     z-index: 999;
@@ -46,7 +45,11 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    width: 200px;
+    padding: 10px;
+}
+
+#aiContextMenu {
+    position: relative;
 }
 
 .contextMenuItem {
@@ -59,4 +62,140 @@
 .contextMenuItem:hover {
     background-color: #007bff;
     color: white;
+}
+
+#chatInterface {
+    position: relative;
+    flex-direction: column;
+    width: calc(100% - 2 * 40px);
+    height: calc(100vh - 115px);
+}
+
+/* For medium windows */
+@media screen and (min-width: 600px) {
+    #aiContextMenu {
+        position: fixed;
+        width: 250px;
+    }
+
+    /* Adjust the breakpoint (600px) as per your requirement */
+    #chatInterface {
+        position: fixed;
+        width: calc(80% - 2 * 40px);
+    }
+}
+
+/* For large windows */
+@media screen and (min-width: 1024px) {
+    #aiContextMenu {
+        position: fixed;
+        width: 250px;
+    }
+
+    /* Adjust the breakpoint (1024px) as per your requirement */
+    #chatInterface {
+        position: fixed;
+        width: calc(60% - 2 * 40px);
+    }
+}
+
+.close-chat-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: white;
+    color: gray;
+    border: none;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 8px;
+    line-height: 16px;
+    /* To vertically center the X */
+    text-align: center;
+    /* To horizontally center the X */
+    transition: background-color 0.3s;
+}
+
+.close-chat-btn:hover {
+    /* Invert colors on hover */
+    background-color: gray;
+    color: white;
+}
+
+.close-chat-btn:focus {
+    outline: none;
+}
+
+#chatInputContainer {
+    display: flex;
+    /* Makes it a flex container to have the input and button side-by-side */
+    align-items: center;
+    /* Vertically center-aligns children elements */
+    padding: 10px 0;
+    /* Adds some vertical padding */
+}
+
+#chatInput {
+    flex-grow: 1;
+    /* allow the input to take up available width */
+    margin-right: 10px;
+    /* space between input and button */
+}
+
+#sendButton {
+    background-color: rgb(0, 60, 255);
+    /* primary color */
+    color: #efefef;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#sendButton:hover {
+    background-color: #0050cc;
+    /* slightly darker */
+}
+
+#sendButton:focus {
+    outline: none;
+}
+
+#sendButton i {
+    font-size: 16px;
+    /* adjust size as needed */
+}
+
+#chatMessageContainer {
+    display: flex;
+    max-height: calc(100vh - 115px - 60px);
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.chat_message_user,
+.chat_message_assistant {
+    width: 88%;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 5px 0;
+}
+
+.chat_message_user {
+    background-color: lightblue;
+    align-self: flex-end;
+    /* Messages from the user are aligned to the right */
+}
+
+.chat_message_assistant {
+    background-color: lightgray;
+    align-self: flex-start;
+    /* Messages from the assistant are aligned to the left */
 }

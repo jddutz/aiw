@@ -1,4 +1,4 @@
-# app/forms/edit_project_template_form.py
+# app/forms/project_template_edit_form.py
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, IntegerField, SubmitField
@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Length, Optional
 
 class EditProjectTemplateForm(FlaskForm):
     category = SelectField("Category", validators=[DataRequired()])
-    template_name = StringField(
+    project_template_name = StringField(
         "Template Name", validators=[DataRequired(), Length(min=2, max=255)]
     )
     description = TextAreaField("Description", validators=[DataRequired()])

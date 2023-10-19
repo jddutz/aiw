@@ -15,9 +15,9 @@ def new():
     form = NewProjectForm()
 
     templates_by_category = {}
-    for template in ProjectTemplate.query.all():
-        templates_by_category.setdefault(template.category, []).append(
-            (str(template.id), template.name)
+    for project_template in ProjectTemplate.query.all():
+        templates_by_category.setdefault(project_template.category, []).append(
+            (str(project_template.id), project_template.project_template_name)
         )
 
     # Convert the dictionary to the list format
@@ -45,7 +45,11 @@ def new():
         return redirect(url_for("project.project_detail", project_id=new_project.id))
 
     # If GET, show login page
-    return render_template("create_project.html", form=form)
+    return render_template(
+        "create_project.html",
+        form=form,
+        show_ai_toolbox=True,
+    )
 
 
 @project_blueprint.route("/search", methods=["GET"])
@@ -56,7 +60,11 @@ def search():
 @project_blueprint.route("/<int:project_id>", methods=["GET"])
 def project_detail(project_id):
     project = WritingProject.query.get_or_404(project_id)
-    return render_template("project_detail.html", project=project)
+    return render_template(
+        "project_detail.html",
+        project=project,
+        show_ai_toolbox=True,
+    )
 
 
 @project_blueprint.route("/<int:project_id>/update", methods=["GET", "POST"])
@@ -65,7 +73,11 @@ def update_project(project_id):
     if request.method == "POST":
         # Logic to update the project goes here
         pass
-    return render_template("update_project.html", project=project)
+    return render_template(
+        "update_project.html",
+        project=project,
+        show_ai_toolbox=True,
+    )
 
 
 @project_blueprint.route("/<int:project_id>/delete", methods=["GET", "POST"])

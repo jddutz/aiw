@@ -53,8 +53,8 @@ def create_template(data):
     return template
 
 
-def update_template(template_id, data):
-    template = ProjectTemplate.query.get_or_404(template_id)
+def update_template(project_template_id, data):
+    template = ProjectTemplate.query.get_or_404(project_template_id)
 
     for key, value in data.items():
         if key == "tags":
@@ -68,12 +68,12 @@ def update_template(template_id, data):
     return template
 
 
-def get_template(template_id):
-    return ProjectTemplate.query.get_or_404(template_id)
+def get_template(project_template_id):
+    return ProjectTemplate.query.get_or_404(project_template_id)
 
 
-def delete_template(template_id):
-    template = ProjectTemplate.query.get_or_404(template_id)
+def delete_template(project_template_id):
+    template = ProjectTemplate.query.get_or_404(project_template_id)
     db.session.delete(template)
     db.session.commit()
     return True
