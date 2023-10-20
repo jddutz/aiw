@@ -14,7 +14,7 @@ help_context_blueprint = Blueprint("help_context", __name__)
 def index():
     data = HelpContext.query.order_by(HelpContext.context_id).all()
     return render_template(
-        "help_context_index.html",
+        "admin/help_context/index.html",
         data=data,
         show_ai_toolbox=True,
     )
@@ -44,7 +44,7 @@ def create():
         return redirect(url_for("help_context.index"))
 
     return render_template(
-        "help_context_edit.html",
+        "admin/help_context/edit.html",
         form=form,
         help_context=None,  # No initial HelpContext data for creation
         show_ai_toolbox=True,
@@ -58,33 +58,33 @@ def detail(help_context_id):
     )  # Fetch help_context by ID or return 404
 
     return render_template(
-        "help_context_detail.html",
+        "admin/help_context/detail.html",
         data=data,
         show_ai_toolbox=True,
     )
 
 
-@help_context_blueprint.route("/<int:help_context_id>/edit", methods=["GET", "POST"])
-def edit(help_context_id):
+@help_context_blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
+def edit(id):
     # Retrieve the project help_context by its ID
-    data = HelpContext.query.get_or_404(help_context_id)
+    model = HelpContext.query.get_or_404(id)
 
-    form = HelpContextEditForm(obj=data)
+    form = HelpContextEditForm(obj=model)
 
     if form.validate_on_submit():
         # Update the project help_context's fields based on the form data
-        form.populate_obj(data)
+        form.populate_obj(model)
 
         # Save the changes to the database
         db.session.commit()
 
-        flash(f"Help Context, {data.context_id}, updated successfully!", "success")
+        flash(f"Help Context, {model.context_id}, updated successfully!", "success")
         return redirect(url_for("help_context.index"))
 
     return render_template(
-        "help_context_edit.html",
+        "admin/help_context/edit.html",
         form=form,
-        help_context=data,
+        model=model,
         show_ai_toolbox=True,
     )
 

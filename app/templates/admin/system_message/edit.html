@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    {# Decide the heading based on the presence of system_message #}
+    <h2>{{ "Edit System Message" if system_message else "Create System Message" }}</h2>
+
+    {# Decide the form's action based on the presence of system_message #}
+    <form
+        action="{{ url_for('system_message.edit', system_message_id=system_message.id) if system_message else url_for('system_message.create') }}"
+        method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label for="title">Title</label>
+            {{ form.title(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="content">Content</label>
+            {{ form.content(class="form-control", rows=10) }}
+        </div>
+
+        <div class="form-group">
+            <label for="type">Type</label>
+            {{ form.type(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="associated_module">Associated Module</label>
+            {{ form.associated_module(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="tags">Tags</label>
+            {{ form.tags(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="version">Version</label>
+            {{ form.version(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="is_active">Active</label>
+            {{ form.is_active }}
+        </div>
+
+        <div class="form-group">
+            <label for="created_by">Created By</label>
+            {{ form.created_by(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="updated_by">Updated By</label>
+            {{ form.updated_by(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{{ "Update" if system_message else "Create" }}</button>
+
+        <div class="mt-4">
+            <a href="{{ url_for('system_message.index') }}" class="btn btn-secondary">Back to Index</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/toolbox/system_message_edit.js') }}"></script>
+{% endblock %}

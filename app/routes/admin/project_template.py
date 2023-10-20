@@ -15,7 +15,7 @@ project_template_blueprint = Blueprint("project_template", __name__)
 def index():
     data = ProjectTemplate.query.all()  # Fetch all templates from the database
     return render_template(
-        "project_template_index.html",
+        "admin/project_template/index.html",
         project_templates=data,
         show_ai_toolbox=True,
     )
@@ -48,7 +48,7 @@ def create():
             return render_template("create_template.html")
 
     return render_template(
-        "create_template.html",
+        "admin/project_template/edit.html",
         show_ai_toolbox=True,
     )
 
@@ -59,31 +59,29 @@ def detail(project_template_id):
         project_template_id
     )  # Fetch project_template by ID or return 404
     return render_template(
-        "project_template_detail.html",
+        "admin/project_template/detail.html",
         project_template=data,
         show_ai_toolbox=True,
     )
 
 
-@project_template_blueprint.route(
-    "/<int:project_template_id>/edit", methods=["GET", "POST"]
-)
-def edit(project_template_id):
+@project_template_blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
+def edit(id):
     # Retrieve the project project_template by its ID
-    data = ProjectTemplate.query.get_or_404(project_template_id)
+    model = ProjectTemplate.query.get_or_404(id)
 
-    form = ProjectTemplateEditForm(obj=data)
+    form = ProjectTemplateEditForm(obj=model)
     form.category.choices = project_template_manager.load_categories()
 
     if form.validate_on_submit():
         # Update the project project_template's fields based on the form data
-        form.populate_obj(data)
+        form.populate_obj(model)
 
         # Save the changes to the database
         db.session.commit()
 
         flash(
-            f"Project Template, {data.project_template_name} updated successfully!",
+            f"Project Template, {model.project_template_name} updated successfully!",
             "success",
         )
         return redirect(url_for("project_template.list"))
@@ -99,12 +97,17 @@ def edit(project_template_id):
             "icon": "fas fa-comment",
             "js_function": "update_methodology()",
         },
+        {
+            "caption": "Update Project Structure",
+            "icon": "fas fa-comment",
+            "js_function": "update_project_structure()",
+        },
     ]
 
     return render_template(
-        "project_template_edit.html",
+        "admin/project_template/edit.html",
         form=form,
-        project_template=data,
+        model=model,
         show_ai_toolbox=True,
         ai_toolbox_actions=ai_toolbox_actions,
     )

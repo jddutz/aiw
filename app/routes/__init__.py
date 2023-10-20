@@ -10,18 +10,28 @@ from app.services import (
     project_manager,
 )
 
+# Admin area blueprints
+from app.routes.admin.project_template import project_template_blueprint
+from app.routes.admin.help_context import help_context_blueprint
+from app.routes.admin.system_message import system_message_blueprint
+
+flask_app.register_blueprint(
+    project_template_blueprint, url_prefix="/admin/project_template"
+)
+flask_app.register_blueprint(help_context_blueprint, url_prefix="/admin/help_context")
+flask_app.register_blueprint(
+    system_message_blueprint, url_prefix="/admin/system_message"
+)
+
+
 # UI blueprints
 from app.routes.www.user import user_blueprint
 from app.routes.www.project import project_blueprint
 from app.routes.www.story import story_blueprint
-from app.routes.www.project_template import project_template_blueprint
-from app.routes.www.help_context import help_context_blueprint
 
 flask_app.register_blueprint(user_blueprint, url_prefix="/user")
 flask_app.register_blueprint(project_blueprint, url_prefix="/project")
 flask_app.register_blueprint(story_blueprint, url_prefix="/story")
-flask_app.register_blueprint(project_template_blueprint, url_prefix="/project_template")
-flask_app.register_blueprint(help_context_blueprint, url_prefix="/help_context")
 
 # API blueprints
 from app.routes.api.v1.user import user_api_v1
@@ -66,3 +76,10 @@ def home():
         recent_activities=recent_activities,
         projects=projects,
     )
+
+
+@flask_app.route("/admin", methods=["GET"])
+@login_required
+def admin():
+    # If the user is not authenticated, render the landing page
+    return render_template("admin/home.html")

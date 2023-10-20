@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Edit Project Template</h2>
+<div class="container mt-5">{# Decide the heading based on whether or not model is None #}
+    <h2>{{ "Edit Project Template" if model else "Create Project Template" }}</h2>
 
-    <form action="{{ url_for('project_template.edit', project_template_id=project_template.id) }}" method="post">
+    {# Decide the form's action based on whether or not model is None #}
+    <form action="{{ url_for('project_template.edit', id=model.id) if model else url_for('project_template.create') }}">
         {{ form.hidden_tag() }}
-
         <div class="form-group">
             <label for="category">Category</label>
             <input list="categories" name="category" id="category" class="form-control"

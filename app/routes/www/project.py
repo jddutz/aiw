@@ -5,14 +5,14 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 from flask_login import current_user
 from app.models import WritingProject, ProjectTemplate
 from app.services import project_manager, token_manager
-from app.forms import NewProjectForm
+from app.forms import ProjectEditForm
 
 project_blueprint = Blueprint("project", __name__)
 
 
 @project_blueprint.route("/create", methods=["GET", "POST"])
 def new():
-    form = NewProjectForm()
+    form = ProjectEditForm()
 
     templates_by_category = {}
     for project_template in ProjectTemplate.query.all():
