@@ -43,7 +43,7 @@ def login():
             flash(e.message, "danger")
 
     # If GET, show login page
-    return render_template("login.html", form=form)
+    return render_template("user/login.html", form=form)
 
 
 @user_blueprint.route("/register", methods=["GET", "POST"])
@@ -68,4 +68,4 @@ def register():
             flash(f"Email already exists: {e.message}", "danger")
 
     # If GET, show sign up page
-    return render_template("register.html", form=form)
+    return render_template("user/register.html", form=form)
