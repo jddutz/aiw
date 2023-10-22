@@ -19,7 +19,7 @@ def index():
         # Handle the search terms as needed.
         return render_template("model_search_results.html")
 
-    return render_template("model_index.html")
+    return render_template("model_list.html")
 
 
 @model_blueprint.route("/create", methods=["GET", "POST"])

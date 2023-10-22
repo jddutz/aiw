@@ -2,47 +2,54 @@
 {% block content %}
 
 <div class="container mt-5">
-    <div class="d-flex align-items-start">
-        <h2 class="mb-0">{{ data.title }}</h2>
-        <a href="{{ url_for('system_message.edit', system_message_id=data.id) }}" class="btn btn-white ml-2">
-            <i class="bi bi-pencil text-dark"></i>
-        </a>
-    </div>
-    <hr>
+  <div class="d-flex align-items-start">
+    <h2 class="mb-0">{{ model.title }}</h2>
+    <a href="{{ url_for('system_message.edit', id=model.id) }}" class="btn btn-white ml-2">
+      <i class="bi bi-pencil text-dark"></i>
+    </a>
+  </div>
+  <hr>
 
-    <h5>Content</h5>
-    <p>{{ data.content }}</p>
+  <h5>Content</h5>
+  <p>{{ model.content }}</p>
 
-    <h5>Type</h5>
-    <p>{{ data.type or 'N/A' }}</p>
+  <h5>Type</h5>
+  <p>{{ model.type or 'N/A' }}</p>
 
-    <h5>Associated Module</h5>
-    <p>{{ data.associated_module or 'N/A' }}</p>
+  <h5>Associated Module</h5>
+  <p>{{ model.associated_module or 'N/A' }}</p>
 
-    <h5>Tags</h5>
-    <p>{{ data.tags or 'N/A' }}</p>
+  <h5>Tags</h5>
+  <p>{{ model.tags or 'N/A' }}</p>
 
-    <h5>Version</h5>
-    <p>{{ data.version or 'N/A' }}</p>
+  <h5>Version</h5>
+  <p>{{ model.version or 'N/A' }}</p>
 
-    <h5>Active</h5>
-    <p>{{ "Yes" if data.is_active else "No" }}</p>
+  <h5>Active</h5>
+  <p>{{ "Yes" if model.is_active else "No" }}</p>
 
-    <h5>Created By</h5>
-    <p>{{ data.created_by or 'N/A' }}</p>
+  <h5>Created By</h5>
+  <p>{{ model.created_by or 'N/A' }}</p>
 
-    <h5>Updated By</h5>
-    <p>{{ data.updated_by or 'N/A' }}</p>
+  <h5>Updated By</h5>
+  <p>{{ model.updated_by or 'N/A' }}</p>
 
-    <h5>Created At</h5>
-    <p>{{ data.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+  <h5>Created At</h5>
+  <p>{{ model.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
 
-    <h5>Updated At</h5>
-    <p>{{ data.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+  <h5>Updated At</h5>
+  <p>{{ model.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
 
-    <div class="mt-4">
-        <a href="{{ url_for('system_message.index') }}" class="btn btn-secondary">Back to Index</a>
-    </div>
+  <div class="mt-4">
+    <button class="btn btn-secondary"
+      onclick="showModalDialog('deleteModal','{{ url_for('system_message.delete', id=model.id) }}')">Delete</button>
+  </div>
+
+  <div class="mt-4">
+    <a href="{{ url_for('system_message.list') }}">Back to Index</a>
+  </div>
 </div>
+
+{% include 'includes/delete_modal.html' %}
 
 {% endblock %}

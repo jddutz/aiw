@@ -2,30 +2,30 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Create a New Writing Project</h1>
-    <form action="{{ url_for('project.new') }}" method="post" class="mt-3">
-        {{ form.hidden_tag() }}
-        <div class="mb-3">
-            {{ form.title.label }}<br>
-            {{ form.title(class="form-control") }}
-        </div>
-        <div class="mb-3">
-            {{ form.description.label }}<br>
-            {{ form.description(class="form-control") }}
-        </div>
-        <div class="mb-3">
-            {{ form.project_template.label }}<br>
-            {{ form.project_template(class="form-control") }}
-        </div>
-        <div class="mb-3">
-            {{ form.visibility.label }}<br>
-            {{ form.visibility(class="form-control") }}
-        </div>
-        <div class="mb-3">
-            {{ form.tags.label }}<br>
-            {{ form.tags(class="form-control") }}
-        </div>
-        {{ form.submit(class="btn btn-primary") }}
-    </form>
+  <h1>Create a New Writing Project</h1>
+  <form action="{{ url_for('project.new') }}" method="post" class="mt-3">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.title.label }}<br>
+      {{ form.title(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.description.label }}<br>
+      {{ form.description(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.project_template.label }}<br>
+      {{ form.project_template(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.visibility.label }}<br>
+      {{ form.visibility(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.tags.label }}<br>
+      {{ form.tags(class="form-control") }}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+  </form>
 </div>
 {% endblock %}

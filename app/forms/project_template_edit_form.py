@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Length, Optional
 
 
 class ProjectTemplateEditForm(FlaskForm):
-    category = SelectField("Category", validators=[DataRequired()])
+    category = StringField("Category", validators=[DataRequired(), Length(max=50)])
     project_template_name = StringField(
         "Template Name", validators=[DataRequired(), Length(min=2, max=255)]
     )
@@ -24,10 +24,4 @@ class ProjectTemplateEditForm(FlaskForm):
         description="Provide a serialized JSON structure.",
     )
     imageref = StringField("Image Reference", validators=[Optional(), Length(max=255)])
-    usage_count = IntegerField(
-        "Usage Count",
-        validators=[DataRequired()],
-        default=0,
-        render_kw={"readonly": True},
-    )
     submit = SubmitField("Save")

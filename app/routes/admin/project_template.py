@@ -1,90 +1,111 @@
-# app/routes/www/project_template.py
+# app/routes/admin/project_template.py
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
 
 from app import db
 from app.models import ProjectTemplate
-from app.services import project_template_manager
 from app.forms.project_template_edit_form import ProjectTemplateEditForm
 
-project_template_blueprint = Blueprint("project_template", __name__)
+MODEL = ProjectTemplate
+MODEL_DESC = "Project Template"
+EDIT_FORM = ProjectTemplateEditForm
+
+ROUTE_NAME = "project_template"
+TEMPLATE_PATH = f"admin/{ROUTE_NAME}"
+
+CACHED_CATEGORIES = None
+UPDATE_CACHE = None
 
 
-@project_template_blueprint.route("/", methods=["GET"])
-def index():
-    data = ProjectTemplate.query.all()  # Fetch all templates from the database
+def load_categories():
+    global CACHED_CATEGORIES
+    global UPDATE_CACHE
+
+    # Use cached categories if available
+    if CACHED_CATEGORIES:
+        if UPDATE_CACHE and UPDATE_CACHE < datetime.utcnow():
+            return CACHED_CATEGORIES
+
+    categories = (
+        db.session.query(ProjectTemplate.category)
+        .distinct()
+        .order_by(ProjectTemplate.category.asc())
+        .all()
+    )
+
+    # Convert categories from list of tuples to a list of strings
+    CACHED_CATEGORIES = [(category[0], category[0]) for category in categories]
+    UPDATE_CACHE = datetime.utcnow() + timedelta(minutes=10)
+
+    return CACHED_CATEGORIES
+
+
+blueprint = Blueprint(ROUTE_NAME, __name__)
+
+
+@blueprint.route("/", methods=["GET"])
+def list():
+    data = MODEL.query.all()
     return render_template(
-        "admin/project_template/index.html",
-        project_templates=data,
+        f"{TEMPLATE_PATH}/list.html",
+        data=data,
         show_ai_toolbox=True,
     )
 
 
-@project_template_blueprint.route("/", methods=["POST"])
+@blueprint.route("/create", methods=["GET", "POST"])
 def create():
-    if request.method == "POST":
-        template_info = {
-            "name": request.form.get("name"),
-            "description": request.form.get("description"),
-            "methodology": request.form.get("methodology"),
-            # Add any other required fields from the form here.
-        }
-
-        # You may want to handle tags, genres, etc. separately if they are included in the form.
-        # For instance, using request.form.getlist() for multi-select fields.
-
-        try:
-            new_template = project_template_manager.create_template(template_info)
-            flash("Project project_template successfully created!", "success")
-            return redirect(
-                url_for(
-                    "project_template.project_template_detail",
-                    project_template_id=new_template.id,
-                )
-            )
-        except Exception as e:
-            flash(f"Error creating project project_template: {str(e)}", "danger")
-            return render_template("create_template.html")
-
-    return render_template(
-        "admin/project_template/edit.html",
-        show_ai_toolbox=True,
-    )
-
-
-@project_template_blueprint.route("/<int:project_template_id>", methods=["GET"])
-def detail(project_template_id):
-    data = ProjectTemplate.query.get_or_404(
-        project_template_id
-    )  # Fetch project_template by ID or return 404
-    return render_template(
-        "admin/project_template/detail.html",
-        project_template=data,
-        show_ai_toolbox=True,
-    )
-
-
-@project_template_blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-def edit(id):
-    # Retrieve the project project_template by its ID
-    model = ProjectTemplate.query.get_or_404(id)
-
-    form = ProjectTemplateEditForm(obj=model)
-    form.category.choices = project_template_manager.load_categories()
+    form = EDIT_FORM()
+    form.category.choices = load_categories()
 
     if form.validate_on_submit():
-        # Update the project project_template's fields based on the form data
-        form.populate_obj(model)
-
-        # Save the changes to the database
+        model = MODEL()
+        form.populate_obj(obj=model)
+        db.session.add(model)
         db.session.commit()
 
         flash(
-            f"Project Template, {model.project_template_name} updated successfully!",
+            f"{MODEL_DESC}, {model.project_template_name}, created successfully!",
             "success",
         )
-        return redirect(url_for("project_template.list"))
+        return redirect(url_for(f"{ROUTE_NAME}.list"))
+
+    return render_template(
+        f"{TEMPLATE_PATH}/edit.html",
+        form=form,
+        model=None,
+        show_ai_toolbox=True,
+    )
+
+
+@blueprint.route("/<int:id>", methods=["GET"])
+def detail(id):
+    model = MODEL.query.get_or_404(id)
+
+    return render_template(
+        f"{TEMPLATE_PATH}/detail.html",
+        model=model,
+        show_ai_toolbox=True,
+    )
+
+
+@blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
+def edit(id):
+    model = MODEL.query.get_or_404(id)
+
+    form = EDIT_FORM(obj=model)
+    form.category.choices = load_categories()
+
+    if form.validate_on_submit():
+        form.populate_obj(model)
+        db.session.commit()
+
+        flash(
+            f"{MODEL_DESC}, {model.project_template_name} updated successfully!",
+            "success",
+        )
+        return redirect(url_for(f"{ROUTE_NAME}.list"))
 
     ai_toolbox_actions = [
         {
@@ -105,9 +126,21 @@ def edit(id):
     ]
 
     return render_template(
-        "admin/project_template/edit.html",
+        f"{TEMPLATE_PATH}/edit.html",
         form=form,
         model=model,
         show_ai_toolbox=True,
         ai_toolbox_actions=ai_toolbox_actions,
     )
+
+
+@blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
+def delete(id):
+    # Retrieve the model by its ID
+    model = MODEL.query.get_or_404(id)
+    db.session.delete(model)
+    db.session.commit()
+
+    flash(f"{MODEL_DESC}, {model.project_template_name}, deleted!", "success")
+
+    return redirect(url_for(f"{ROUTE_NAME}.list"))

@@ -2,20 +2,30 @@
 {% block content %}
 
 <div class="container mt-5">
-    <div class="d-flex align-items-start">
-        <h2 class="mb-0">{{ data.context_id }}</h2>
-        <a href="{{ url_for('help_context.edit', help_context_id=data.id) }}" class="btn btn-white">
-            <i class="bi bi-pencil text-dark"></i>
-        </a>
-    </div>
-    <hr>
+  <div class="d-flex align-items-start">
+    <h2 class="mb-0">{{ model.context_id }}</h2>
+    <a href="{{ url_for('help_context.edit', id=model.id) }}" class="btn btn-white">
+      <i class="bi bi-pencil text-dark"></i>
+    </a>
+  </div>
+  <hr>
 
-    <h5>Content</h5>
-    <p>{{ data.content }}</p>
+  <h5>Title</h5>
+  <p>{{ model.title }}</p>
 
-    <div class="mt-4">
-        <a href="{{ url_for('help_context.index') }}" class="btn btn-secondary">Back to Index</a>
-    </div>
+  <h5>Content</h5>
+  <p>{{ model.content }}</p>
+
+  <div class="mt-4">
+    <button class="btn btn-secondary"
+      onclick="showModalDialog('deleteModal','{{ url_for('help_context.delete', id=model.id) }}')">Delete</button>
+  </div>
+
+  <div class="mt-4">
+    <a href="{{ url_for('help_context.list') }}">Back to Index</a>
+  </div>
 </div>
+
+{% include 'includes/delete_modal.html' %}
 
 {% endblock %}

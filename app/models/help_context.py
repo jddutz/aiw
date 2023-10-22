@@ -9,6 +9,7 @@ class HelpContext(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     context_id = db.Column(db.String(128), nullable=False, unique=True, index=True)
+    title = db.Column(db.String(128), nullable=False, unique=True, index=True)
     content = db.Column(db.Text, nullable=False)
     created = db.Column(
         db.TIMESTAMP,

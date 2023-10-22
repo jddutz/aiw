@@ -1,105 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/aiw.css') }}">
     <title>{% block title %}{% endblock %}</title>
     <!-- Add other meta tags, stylesheets, scripts as needed -->
-</head>
+  </head>
 
-<body>
+  <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('admin') }}">Admin</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Pricing</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                </li>
-            </ul>
-        </div>
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('admin') }}">Admin</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+      </div>
     </nav>
     {% if show_ai_toolbox %}
     <button class="fab" id="aiToolboxButton">
-        <i class="fas fa-robot"></i>
+      <i class="fas fa-robot"></i>
     </button>
     <div id="aiContextMenu" class="floating">
-        <div class="contextMenuItem" onclick="chat()">
-            <i class="fas fa-comment"></i>
-            Show Chat
-        </div>
-        {% for action in ai_toolbox_actions %}
-        <div class="contextMenuItem" onclick="{{ action.js_function }}">
-            {% if action.icon %}<i class="{{ action.icon }}"></i>{% endif %}
-            {{ action.caption }}
-        </div>
-        {% endfor %}
-        <div class="contextMenuItem" onclick="help_chat()">
-            <i class="fas fa-comment"></i>
-            Help
-        </div>
+      <div class="contextMenuItem" onclick="chat()">
+        <i class="fas fa-comment"></i>
+        Show Chat
+      </div>
+      {% for action in ai_toolbox_actions %}
+      <div class="contextMenuItem" onclick="{{ action.js_function }}">
+        {% if action.icon %}<i class="{{ action.icon }}"></i>{% endif %}
+        {{ action.caption }}
+      </div>
+      {% endfor %}
+      <div class="contextMenuItem" onclick="help_chat()">
+        <i class="fas fa-comment"></i>
+        Help
+      </div>
     </div>
     <!-- Chat Interface -->
     <div id="chatInterface" class="floating flex-column align-items-end" style="display:none;">
-        <button id="closeChatButton" class="close-chat-btn" onclick="closeChatInterface(false)">X</button>
-        <div id="chatMessageContainer">
-            <!-- Chat messages will be appended here -->
-        </div>
-        <div id="chatInputContainer">
-            <input type="text" id="chatInput" placeholder="Type your message..." />
-            <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
-        </div>
+      <button id="closeChatButton" class="close-chat-btn" onclick="closeChatInterface(false)">X</button>
+      <div id="chatMessageContainer">
+        <!-- Chat messages will be appended here -->
+      </div>
+      <div id="chatInputContainer">
+        <input type="text" id="chatInput" placeholder="Type your message..." />
+        <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+      </div>
     </div>
     {% endif %}
 
     {% block ai_toolbox_scripts %}{% endblock %}
-    <div class="container mt-3">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <!-- Flash messages -->
-        <div class="flash-messages">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
-        <div id="aiw-content" data-help-context-id="{{ request.endpoint }}">
-            <div id="aiw-content">
-                {% block content %}{% endblock %}
-            </div>
-        </div>
 
-        <script src="{{ url_for('static', filename='js/ai_toolbox.js') }}"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
-</body>
+    <div class="container mt-3">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <!-- Flash messages -->
+      <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+      <div id="aiw-content" data-help-context-id="{{ request.endpoint }}">
+        <div id="aiw-content">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/aiw.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ai_toolbox.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"></script>
+
+  </body>
 
 </html>

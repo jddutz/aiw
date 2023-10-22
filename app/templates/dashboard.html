@@ -3,77 +3,77 @@
 {% block content %}
 
 <div class="container mt-5">
-    <!-- Dashboard Header -->
-    <div class="d-flex justify-content-between">
-        <h2>Dashboard</h2>
-    </div>
+  <!-- Dashboard Header -->
+  <div class="d-flex justify-content-between">
+    <h2>Dashboard</h2>
+  </div>
 
-    <!-- Quick Actions Section -->
-    <div class="mt-4">
-        <h4>Quick Actions</h4>
-        <ul class="list-group">
-            <li class="list-group-item">
-                <a class="quick-action" href="{{ url_for('project.new') }}">New Writing Project</a>
-            </li>
-        </ul>
-    </div>
+  <!-- Quick Actions Section -->
+  <div class="mt-4">
+    <h4>Quick Actions</h4>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <a class="quick-action" href="{{ url_for('project.new') }}">New Writing Project</a>
+      </li>
+    </ul>
+  </div>
 
-    <!-- Notifications Section -->
-    <div class="mt-4">
-        <h4>Notifications</h4>
-        <ul class="list-group">
-            {% for notification in notifications %}
-            <li class="list-group-item">{{ notification.message }}</li>
-            {% else %}
-            <li class="list-group-item">No unread notifications</li>
-            {% endfor %}
-        </ul>
-    </div>
+  <!-- Notifications Section -->
+  <div class="mt-4">
+    <h4>Notifications</h4>
+    <ul class="list-group">
+      {% for notification in notifications %}
+      <li class="list-group-item">{{ notification.message }}</li>
+      {% else %}
+      <li class="list-group-item">No unread notifications</li>
+      {% endfor %}
+    </ul>
+  </div>
 
-    <!-- Recent Activity Section -->
-    <div class="mt-4">
-        <h4>Recent Activity</h4>
-        <ul class="list-group">
-            {% for activity in recent_activities %}
-            <li class="list-group-item">
-                <a href="{{ url_for('activity.detail', activity_id=activity.id) }}">{{ activity.action }} on {{
+  <!-- Recent Activity Section -->
+  <div class="mt-4">
+    <h4>Recent Activity</h4>
+    <ul class="list-group">
+      {% for activity in recent_activities %}
+      <li class="list-group-item">
+        <a href="{{ url_for('activity.detail', activity_id=activity.id) }}">{{ activity.action }} on {{
                     activity.date }}</a>
-            </li>
-            {% else %}
-            <li class="list-group-item">No recent activities</li>
-            {% endfor %}
-        </ul>
-    </div>
+      </li>
+      {% else %}
+      <li class="list-group-item">No recent activities</li>
+      {% endfor %}
+    </ul>
+  </div>
 
-    <!-- Projects Section -->
-    <div class="mt-4">
-        <h4>Your Projects</h4>
-        <ul class="list-group">
-            {% for project in projects %}
-            <li class="list-group-item">
-                <a href="{{ url_for('project.project_detail', project_id=project.id) }}">{{ project.title }}</a>
-            </li>
-            {% else %}
-            <li class="list-group-item">No projects found</li>
-            {% endfor %}
-        </ul>
-    </div>
+  <!-- Projects Section -->
+  <div class="mt-4">
+    <h4>Your Projects</h4>
+    <ul class="list-group">
+      {% for project in projects %}
+      <li class="list-group-item">
+        <a href="{{ url_for('project.project_detail', project_id=project.id) }}">{{ project.title }}</a>
+      </li>
+      {% else %}
+      <li class="list-group-item">No projects found</li>
+      {% endfor %}
+    </ul>
+  </div>
 
-    <!-- Ideas for future dashboard components. 
+  <!-- Ideas for future dashboard components. 
          Uncomment and implement as needed: -->
 
-    <!-- Summary Metrics Section -->
-    <!-- Calendar & Deadlines Section -->
-    <!-- Collaboration Panel Section -->
-    <!-- Tags and Categories Section -->
-    <!-- Writing Streaks & Goals Section -->
-    <!-- Drafts & Bookmarks Section -->
-    <!-- Feedback and Review Highlights Section -->
-    <!-- Reminders & Tasks Section -->
-    <!-- Latest Collections Section -->
-    <!-- Inspirational Quote of the Day Section -->
-    <!-- Writing Tips & Resources Section -->
-    <!-- Community Highlights Section -->
+  <!-- Summary Metrics Section -->
+  <!-- Calendar & Deadlines Section -->
+  <!-- Collaboration Panel Section -->
+  <!-- Tags and Categories Section -->
+  <!-- Writing Streaks & Goals Section -->
+  <!-- Drafts & Bookmarks Section -->
+  <!-- Feedback and Review Highlights Section -->
+  <!-- Reminders & Tasks Section -->
+  <!-- Latest Collections Section -->
+  <!-- Inspirational Quote of the Day Section -->
+  <!-- Writing Tips & Resources Section -->
+  <!-- Community Highlights Section -->
 </div>
 
 {% endblock %}

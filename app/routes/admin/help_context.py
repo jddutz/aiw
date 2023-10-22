@@ -1,4 +1,4 @@
-# app/routes/www/help_context.py
+# app/routes/admin/help_context.py
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
@@ -7,91 +7,124 @@ from app import db
 from app.models import HelpContext
 from app.forms.help_context_edit_form import HelpContextEditForm
 
-help_context_blueprint = Blueprint("help_context", __name__)
+MODEL = HelpContext
+MODEL_DESC = "Help Context"
+EDIT_FORM = HelpContextEditForm
+
+ROUTE_NAME = "help_context"
+TEMPLATE_PATH = f"admin/{ROUTE_NAME}"
+
+CACHED_MODULES = None
+UPDATE_CACHE = None
 
 
-@help_context_blueprint.route("/", methods=["GET"])
-def index():
-    data = HelpContext.query.order_by(HelpContext.context_id).all()
+def load_modules():
+    global CACHED_MODULES
+    global UPDATE_CACHE
+
+    # Use cached categories if available
+    if CACHED_MODULES:
+        if UPDATE_CACHE and UPDATE_CACHE < datetime.utcnow():
+            return CACHED_MODULES
+
+    modules = (
+        db.session.query(HelpContext.id, HelpContext.title)
+        .distinct()
+        .order_by(HelpContext.id.asc())
+        .all()
+    )
+
+    # Convert categories from list of tuples to a list of strings
+    CACHED_MODULES = [(module[0], module[0]) for module in modules]
+    UPDATE_CACHE = datetime.utcnow() + timedelta(minutes=10)
+
+    return CACHED_MODULES
+
+
+blueprint = Blueprint(ROUTE_NAME, __name__)
+
+
+@blueprint.route("/", methods=["GET"])
+def list():
+    data = MODEL.query.all()
     return render_template(
-        "admin/help_context/index.html",
+        f"{TEMPLATE_PATH}/list.html",
         data=data,
         show_ai_toolbox=True,
     )
 
 
-@help_context_blueprint.route("/create", methods=["GET", "POST"])
+@blueprint.route("/create", methods=["GET", "POST"])
 def create():
-    form = HelpContextEditForm()  # Instantiate the form object
+    form = EDIT_FORM()
 
     if form.validate_on_submit():
-        # Create a new HelpContext object
-        new_help_context = HelpContext(
-            context_id=form.context_id.data,
-            content=form.content.data,
-            created=datetime.utcnow(),
-            modified=datetime.utcnow(),
-        )
-
-        # Add the new HelpContext object to the database
-        db.session.add(new_help_context)
+        model = MODEL()
+        form.populate_obj(obj=model)
+        db.session.add(model)
         db.session.commit()
 
         flash(
-            f"Help Context, {new_help_context.context_id}, created successfully!",
+            f"{MODEL_DESC}, {model.title}, created successfully!",
             "success",
         )
-        return redirect(url_for("help_context.index"))
+        return redirect(url_for(f"{ROUTE_NAME}.list"))
 
     return render_template(
-        "admin/help_context/edit.html",
+        f"{TEMPLATE_PATH}/edit.html",
         form=form,
-        help_context=None,  # No initial HelpContext data for creation
+        model=None,
         show_ai_toolbox=True,
     )
 
 
-@help_context_blueprint.route("/<int:help_context_id>/detail", methods=["GET"])
-def detail(help_context_id):
-    data = HelpContext.query.get_or_404(
-        help_context_id
-    )  # Fetch help_context by ID or return 404
+@blueprint.route("/<int:id>", methods=["GET"])
+def detail(id):
+    model = MODEL.query.get_or_404(id)
 
     return render_template(
-        "admin/help_context/detail.html",
-        data=data,
-        show_ai_toolbox=True,
-    )
-
-
-@help_context_blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-def edit(id):
-    # Retrieve the project help_context by its ID
-    model = HelpContext.query.get_or_404(id)
-
-    form = HelpContextEditForm(obj=model)
-
-    if form.validate_on_submit():
-        # Update the project help_context's fields based on the form data
-        form.populate_obj(model)
-
-        # Save the changes to the database
-        db.session.commit()
-
-        flash(f"Help Context, {model.context_id}, updated successfully!", "success")
-        return redirect(url_for("help_context.index"))
-
-    return render_template(
-        "admin/help_context/edit.html",
-        form=form,
+        f"{TEMPLATE_PATH}/detail.html",
         model=model,
         show_ai_toolbox=True,
     )
 
 
-def delete():
-    pass
+@blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
+def edit(id):
+    model = MODEL.query.get_or_404(id)
+
+    form = EDIT_FORM(obj=model)
+
+    if form.validate_on_submit():
+        form.populate_obj(model)
+        db.session.commit()
+
+        flash(
+            f"{MODEL_DESC}, {model.title} updated successfully!",
+            "success",
+        )
+        return redirect(url_for(f"{ROUTE_NAME}.list"))
+
+    ai_toolbox_actions = [
+        {"caption": "Capyion", "icon": "fas fa-comment", "js_function": "function()"}
+    ]
+
+    return render_template(
+        f"{TEMPLATE_PATH}/edit.html",
+        form=form,
+        model=model,
+        show_ai_toolbox=True,
+        ai_toolbox_actions=ai_toolbox_actions,
+    )
 
 
-def search():
-    pass
+@blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
+def delete(id):
+    # Retrieve the model by its ID
+    model = MODEL.query.get_or_404(id)
+    db.session.delete(model)
+    db.session.commit()
+
+    flash(f"{MODEL_DESC}, {model.title}, deleted!", "success")
+
+    return redirect(url_for(f"{ROUTE_NAME}.list"))

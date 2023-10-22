@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 from app.services.token_manager import generate_delete_token, validate_delete_token
 
+
 def test_delete_token():
     # Step 1: Generate a delete token.
     token = generate_delete_token()

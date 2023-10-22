@@ -2,66 +2,73 @@
 {% block content %}
 
 <div class="container mt-5">
-    <div class="d-flex align-items-start">
-        <h2 class="mb-0">{{ project_template.project_template_name }}</h2>
-        <a href="{{ url_for('project_template.edit', project_template_id=project_template.id) }}" class="btn btn-white">
-            <i class="bi bi-pencil text-dark"></i>
-        </a>
-    </div>
-    <hr>
+  <div class="d-flex align-items-start">
+    <h2 class="mb-0">{{ model.project_template_name }}</h2>
+    <a href="{{ url_for('project_template.edit', id=model.id) }}" class="btn btn-white">
+      <i class="bi bi-pencil text-dark"></i>
+    </a>
+  </div>
+  <hr>
 
-    <h5>Description</h5>
-    <p>{{ project_template.description }}</p>
+  <h5>Description</h5>
+  <p>{{ model.description }}</p>
 
-    <h5>Methodology</h5>
-    <ol>
-        {% for step in project_template.methodology.split('\n') if step.strip() %}
-        <li>{{ step }}</li>
-        {% endfor %}
-    </ol>
+  <h5>Methodology</h5>
+  <ol>
+    {% for step in model.methodology.split('\n') if step.strip() %}
+    <li>{{ step }}</li>
+    {% endfor %}
+  </ol>
 
-    <h5>Length</h5>
-    <p>{{ project_template.length }}</p>
+  <h5>Length</h5>
+  <p>{{ model.length }}</p>
 
-    <h5>Genres</h5>
-    <ul>
-        {% if project_template.genres is string %}
-        {% for genre in project_template.genres.split(';') %}
-        <li>{{ genre }}</li>
-        {% endfor %}
-        {% else %}
-        {% for genre in project_template.genres %}
-        <li>{{ genre.name }}</li>
-        {% endfor %}
-        {% endif %}
-    </ul>
-    <p><small>This is just a representative list. Many other genres exist. Choose a genre that best describes your
-            creation.</small></p>
-    <h5>Tags</h5>
-    <ul>
-        {% if project_template.tags is string %}
-        {% for tag in project_template.tags.split(';') %}
-        <li>{{ tag }}</li>
-        {% endfor %}
-        {% else %}
-        {% for tag in project_template.tags %}
-        <li>{{ tag.name }}</li> {# or whatever attribute holds the tag's name in your Tag model #}
-        {% endfor %}
-        {% endif %}
-    </ul>
-
-    {% if project_template.links %}
-    <h5>Related Links</h5>
-    <ul>
-        {% for link in project_template.links.split(';') %}
-        <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
-        {% endfor %}
-    </ul>
+  <h5>Genres</h5>
+  <ul>
+    {% if model.genres is string %}
+    {% for genre in model.genres.split(';') %}
+    <li>{{ genre }}</li>
+    {% endfor %}
+    {% else %}
+    {% for genre in model.genres %}
+    <li>{{ genre.name }}</li>
+    {% endfor %}
     {% endif %}
+  </ul>
+  <p><small>This is just a representative list. Many other genres exist. Choose a genre that best describes your
+      creation.</small></p>
+  <h5>Tags</h5>
+  <ul>
+    {% if model.tags is string %}
+    {% for tag in model.tags.split(';') %}
+    <li>{{ tag }}</li>
+    {% endfor %}
+    {% else %}
+    {% for tag in model.tags %}
+    <li>{{ tag.name }}</li> {# or whatever attribute holds the tag's name in your Tag model #}
+    {% endfor %}
+    {% endif %}
+  </ul>
 
-    <div class="mt-4">
-        <a href="{{ url_for('project_template.index') }}" class="btn btn-secondary">Back to Templates</a>
-    </div>
+  {% if model.links %}
+  <h5>Related Links</h5>
+  <ul>
+    {% for link in model.links.split(';') %}
+    <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <div class="mt-4">
+    <button class="btn btn-secondary"
+      onclick="showModalDialog('deleteModal','{{ url_for('project_template.delete', id=model.id) }}')">Delete</button>
+  </div>
+
+  <div class="mt-4">
+    <a href="{{ url_for('project_template.list') }}">Back to Index</a>
+  </div>
 </div>
+
+{% include 'includes/delete_modal.html' %}
 
 {% endblock %}

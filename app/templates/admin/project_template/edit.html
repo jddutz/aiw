@@ -2,70 +2,86 @@
 
 {% block content %}
 <div class="container mt-5">{# Decide the heading based on whether or not model is None #}
-    <h2>{{ "Edit Project Template" if model else "Create Project Template" }}</h2>
+  <h2>{{ "Edit Project Template" if model else "Create Project Template" }}</h2>
 
-    {# Decide the form's action based on whether or not model is None #}
-    <form action="{{ url_for('project_template.edit', id=model.id) if model else url_for('project_template.create') }}">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            <label for="category">Category</label>
-            <input list="categories" name="category" id="category" class="form-control"
-                value="{{ form.category.data }}">
-            <datalist id="categories">
-                {% for cat in form.category.choices %}
-                <option value="{{ cat[0] }}">
-                    {% endfor %}
-            </datalist>
-            {% if form.category.errors %}
-            <span class="text-danger">{{ form.category.errors[0] }}</span>
-            {% endif %}
-        </div>
+  {# Decide the form's action based on whether or not model is None #}
+  <form method="POST"
+    action="{{ url_for('project_template.edit', id=model.id) if model else url_for('project_template.create') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      <label for="category">Category</label>
+      <input list="categories" name="category" id="category" class="form-control" value="{{ form.category.data }}">
+      <datalist id="categories">
+        {% for cat in form.category.choices %}
+        <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+        {% endfor %}
+      </datalist>
+      {% if form.category.errors %}
+      <span class="text-danger">{{ form.category.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="project_template_name">Template Name</label>
-            {{ form.project_template_name(class="form-control") }}
-        </div>
+    <div class="form-group">
+      <label for="project_template_name">Template Name</label>
+      {{ form.project_template_name(class="form-control") }}
+      {% if form.project_template_name.errors %}
+      <span class="text-danger">{{ form.project_template_name.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="description">Description</label>
-            {{ form.description(class="form-control", rows=5) }}
-        </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      {{ form.description(class="form-control", rows=5) }}
+      {% if form.description.errors %}
+      <span class="text-danger">{{ form.description.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="methodology">Methodology</label>
-            {{ form.methodology(class="form-control", rows=10) }}
-        </div>
+    <div class="form-group">
+      <label for="methodology">Methodology</label>
+      {{ form.methodology(class="form-control", rows=10) }}
+      {% if form.methodology.errors %}
+      <span class="text-danger">{{ form.methodology.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="length">Length</label>
-            {{ form.length(class="form-control") }}
-        </div>
+    <div class="form-group">
+      <label for="length">Length</label>
+      {{ form.length(class="form-control") }}
+      {% if form.length.errors %}
+      <span class="text-danger">{{ form.length.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="links">Links (Separated by semicolons)</label>
-            {{ form.links(class="form-control", placeholder="For example: link1;link2;link3", rows=3) }}
-        </div>
+    <div class="form-group">
+      <label for="links">Links (Separated by semicolons)</label>
+      {{ form.links(class="form-control", placeholder="For example: link1;link2;link3", rows=3) }}
+      {% if form.links.errors %}
+      <span class="text-danger">{{ form.links.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="structure">Structure (JSON format)</label>
-            {{ form.structure(class="form-control", placeholder="Provide a serialized JSON structure.", rows=5) }}
-        </div>
+    <div class="form-group">
+      <label for="structure">Structure (JSON format)</label>
+      {{ form.structure(class="form-control", placeholder="Provide a serialized JSON structure.", rows=5) }}
+      {% if form.structure.errors %}
+      <span class="text-danger">{{ form.structure.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="imageref">Image Reference</label>
-            {{ form.imageref(class="form-control") }}
-        </div>
+    <div class="form-group">
+      <label for="imageref">Image Reference</label>
+      {{ form.imageref(class="form-control") }}
+      {% if form.imageref.errors %}
+      <span class="text-danger">{{ form.imageref.errors[0] }}</span>
+      {% endif %}
+    </div>
 
-        <div class="form-group">
-            <label for="usage_count">Usage Count</label>
-            {{ form.usage_count(class="form-control") }}
-        </div>
-
-        <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
-        <div class="mt-4">
-            <a href="{{ url_for('project_template.index') }}" class="btn btn-secondary">Back to Templates</a>
-        </div>
-    </form>
+    <button type="submit" class="btn btn-primary">{{ "Save Changes" if model else "Create" }}</button>
+    <div class="mt-4">
+      <a href="{{ url_for('project_template.list') }}" class="btn btn-secondary">Back to Templates</a>
+    </div>
+  </form>
 </div>
 {% endblock %}
 

@@ -11,9 +11,9 @@ from app.services import (
 )
 
 # Admin area blueprints
-from app.routes.admin.project_template import project_template_blueprint
-from app.routes.admin.help_context import help_context_blueprint
-from app.routes.admin.system_message import system_message_blueprint
+from app.routes.admin.project_template import blueprint as project_template_blueprint
+from app.routes.admin.help_context import blueprint as help_context_blueprint
+from app.routes.admin.system_message import blueprint as system_message_blueprint
 
 flask_app.register_blueprint(
     project_template_blueprint, url_prefix="/admin/project_template"

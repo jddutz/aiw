@@ -1,108 +1,132 @@
-# app/routes/www/system_message_template.py
+# app/routes/admin/system_message.py
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
 
 from app import db
-
-from app.models import ChatSystemMessage
+from app.models import ChatSystemMessage, HelpContext
 from app.forms.system_message_edit_form import SystemMessageEditForm
 
-system_message_blueprint = Blueprint("system_message", __name__)
+MODEL = ChatSystemMessage
+MODEL_DESC = "System Message"
+EDIT_FORM = SystemMessageEditForm
+
+ROUTE_NAME = "system_message"
+TEMPLATE_PATH = f"admin/{ROUTE_NAME}"
+
+CACHED_MODULES = None
+UPDATE_CACHE = None
 
 
-@system_message_blueprint.route("/", methods=["GET"])
-def index():
-    search_terms = request.args.get("search_terms", default=None)
+def load_modules():
+    global CACHED_MODULES
+    global UPDATE_CACHE
 
-    if search_terms:
-        # Handle the search terms as needed.
-        return render_template("system_message_search_results.html")
+    # Use cached categories if available
+    if CACHED_MODULES:
+        if UPDATE_CACHE and UPDATE_CACHE < datetime.utcnow():
+            return CACHED_MODULES
 
-    data = ChatSystemMessage.query.order_by(ChatSystemMessage.title).all()
+    modules = (
+        db.session.query(HelpContext.id, HelpContext.title)
+        .distinct()
+        .order_by(HelpContext.id.asc())
+        .all()
+    )
+
+    # Convert categories from list of tuples to a list of strings
+    CACHED_MODULES = [(module[0], module[0]) for module in modules]
+    UPDATE_CACHE = datetime.utcnow() + timedelta(minutes=10)
+
+    return CACHED_MODULES
+
+
+blueprint = Blueprint(ROUTE_NAME, __name__)
+
+
+@blueprint.route("/", methods=["GET"])
+def list():
+    data = MODEL.query.all()
     return render_template(
-        "admin/system_message/index.html",
+        f"{TEMPLATE_PATH}/list.html",
         data=data,
         show_ai_toolbox=True,
     )
 
 
-@system_message_blueprint.route("/create", methods=["GET", "POST"])
+@blueprint.route("/create", methods=["GET", "POST"])
 def create():
-    form = SystemMessageEditForm()
+    form = EDIT_FORM()
+    form.associated_module.choices = load_modules()
 
     if form.validate_on_submit():
-        # Create a new ChatSystemMessage object with all the provided fields
-        new_system_message = ChatSystemMessage(
-            title=form.title.data,
-            content=form.content.data,
-            type=form.type.data or None,
-            associated_module=form.associated_module.data or None,
-            tags=form.tags.data or None,
-            version=form.version.data or None,
-            is_active=form.is_active.data,
-            created_by=form.created_by.data or None,
-            updated_by=form.updated_by.data or None,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
-        )
-
-        # Add the new ChatSystemMessage object to the database
-        db.session.add(new_system_message)
+        model = MODEL()
+        form.populate_obj(obj=model)
+        db.session.add(model)
         db.session.commit()
 
         flash(
-            f"System Message, {new_system_message.title}, created successfully!",
+            f"{MODEL_DESC}, {model.title}, created successfully!",
             "success",
         )
-        return redirect(url_for("system_message.index"))
+        return redirect(url_for(f"{ROUTE_NAME}.list"))
 
-    # The edit template will render differently depending on whether or not a model is provided
     return render_template(
-        "admin/system_message/edit.html",
+        f"{TEMPLATE_PATH}/edit.html",
         form=form,
-        system_message=None,
+        model=None,
         show_ai_toolbox=True,
     )
 
 
-@system_message_blueprint.route("/<int:system_message_id>/detail", methods=["GET"])
-def detail(system_message_id):
-    system_message = ChatSystemMessage.query.get_or_404(system_message_id)
+@blueprint.route("/<int:id>", methods=["GET"])
+def detail(id):
+    model = MODEL.query.get_or_404(id)
 
     return render_template(
-        "admin/system_message/detail.html",
-        data=system_message,
-        show_ai_toolbox=True,
-    )
-
-
-@system_message_blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-def edit(id):
-    model = ChatSystemMessage.query.get_or_404(id)
-
-    form = SystemMessageEditForm(obj=model)
-
-    if form.validate_on_submit():
-        # Update  fields based on the form data
-        form.populate_obj(model)
-
-        # Save the changes to the database
-        db.session.commit()
-
-        flash(f"System Message, {model.title}, updated successfully!", "success")
-        return redirect(url_for("system_message.index"))
-
-    return render_template(
-        "admin/system_message/edit.html",
-        form=form,
+        f"{TEMPLATE_PATH}/detail.html",
         model=model,
         show_ai_toolbox=True,
     )
 
 
-@system_message_blueprint.route(
-    "/<int:system_message_id>/delete", methods=["GET", "POST"]
-)
-def delete(system_message_id):
-    return render_template("admin/system_message/delete.html")
+@blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
+def edit(id):
+    model = MODEL.query.get_or_404(id)
+
+    form = EDIT_FORM(obj=model)
+    form.associated_module.choices = load_modules()
+
+    if form.validate_on_submit():
+        form.populate_obj(model)
+        db.session.commit()
+
+        flash(
+            f"{MODEL_DESC}, {model.title} updated successfully!",
+            "success",
+        )
+        return redirect(url_for(f"{ROUTE_NAME}.list"))
+
+    ai_toolbox_actions = [
+        {"caption": "Capyion", "icon": "fas fa-comment", "js_function": "function()"}
+    ]
+
+    return render_template(
+        f"{TEMPLATE_PATH}/edit.html",
+        form=form,
+        model=model,
+        show_ai_toolbox=True,
+        ai_toolbox_actions=ai_toolbox_actions,
+    )
+
+
+@blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
+def delete(id):
+    # Retrieve the model by its ID
+    model = MODEL.query.get_or_404(id)
+    db.session.delete(model)
+    db.session.commit()
+
+    flash(f"{MODEL_DESC}, {model.title}, deleted!", "success")
+
+    return redirect(url_for(f"{ROUTE_NAME}.list"))

@@ -1,8 +1,8 @@
-"""Added help context
+"""setup
 
-Revision ID: b41e0dd12ada
-Revises: b3236e12d3d3
-Create Date: 2023-10-19 09:12:53.850716
+Revision ID: 7f7a478781fb
+Revises: 
+Create Date: 2023-10-21 09:55:24.891703
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b41e0dd12ada'
-down_revision = 'b3236e12d3d3'
+revision = '7f7a478781fb'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -22,6 +22,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('context_id', sa.String(length=128), nullable=False),
     sa.Column('content', sa.Text(), nullable=False),
+    sa.Column('created', sa.TIMESTAMP(), nullable=True),
+    sa.Column('modified', sa.TIMESTAMP(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('help_context', schema=None) as batch_op:

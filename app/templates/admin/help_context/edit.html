@@ -2,34 +2,43 @@
 
 {% block content %}
 <div class="container mt-5">
-    {# Decide the heading based on whether or not model is None #}
-    <h2>{{ "Edit Help Context" if model else "Create Help Context" }}</h2>
+  {# Decide the heading based on whether or not model is None #}
+  <h2>{{ "Edit Help Context" if model else "Create Help Context" }}</h2>
 
-    {# Decide the form's action based on whether or not model is None #}
-    <form action="{{ url_for('help_context.edit', id=model.id) if model else url_for('help_context.create') }}"
-        method="post">
-        {{ form.hidden_tag() }}
+  {# Decide the form's action based on whether or not model is None #}
+  <form action="{{ url_for('help_context.edit', id=model.id) if model else url_for('help_context.create') }}"
+    method="post">
+    {{ form.hidden_tag() }}
 
-        <div class="form-group">
-            {{ form.context_id.label }}
-            {{ form.context_id(class="form-control") }}
-        </div>
+    <div class="form-group">
+      {{ form.context_id.label }}
+      {{ form.context_id(class="form-control") }}
+    </div>
 
-        {% if form.content.errors %}
-        <span class="text-danger">{{ form.content.errors[0] }}</span>
-        {% endif %}
+    {% if form.title.errors %}
+    <span class="text-danger">{{ form.title.errors[0] }}</span>
+    {% endif %}
 
-        <div class="form-group">
-            {{ form.content.label }}
-            {{ form.content(class="form-control", rows=15) }}
-        </div>
+    <div class="form-group">
+      {{ form.title.label }}
+      {{ form.title(class="form-control") }}
+    </div>
 
-        <button type="submit" class="btn btn-primary">{{ "Update" if model else "Create" }}</button>
+    {% if form.content.errors %}
+    <span class="text-danger">{{ form.content.errors[0] }}</span>
+    {% endif %}
 
-        <div class="mt-4">
-            <a href="{{ url_for('help_context.index') }}" class="btn btn-secondary">Back to Index</a>
-        </div>
-    </form>
+    <div class="form-group">
+      {{ form.content.label }}
+      {{ form.content(class="form-control", rows=15) }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ "Save Changes" if model else "Create" }}</button>
+
+    <div class="mt-4">
+      <a href="{{ url_for('help_context.list') }}" class="btn btn-secondary">Back to Index</a>
+    </div>
+  </form>
 </div>
 {% endblock %}
 

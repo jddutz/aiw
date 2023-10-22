@@ -9,6 +9,7 @@ class HelpContextEditForm(FlaskForm):
     context_id = StringField(
         "Help Context ID", validators=[DataRequired(), Length(min=7, max=128)]
     )
+    title = StringField("Title", validators=[DataRequired(), Length(min=1, max=128)])
     content = TextAreaField("Content", validators=[DataRequired()])
 
     submit = SubmitField("Save")

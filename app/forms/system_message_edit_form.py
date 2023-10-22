@@ -9,12 +9,6 @@ SYSTEM_MESSAGE_TYPES = [
     # ... add more types as needed
 ]
 
-ASSOCIATED_MODULES = [
-    ("module1", "Module 1"),
-    ("module2", "Module 2"),
-    # ... add more modules as needed
-]
-
 
 class SystemMessageEditForm(FlaskForm):
     """Form for editing system messages."""
@@ -22,9 +16,7 @@ class SystemMessageEditForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired(), Length(max=255)])
     content = TextAreaField("Content", validators=[DataRequired()])
     type = SelectField("Type", choices=SYSTEM_MESSAGE_TYPES, validators=[Optional()])
-    associated_module = SelectField(
-        "Associated Module", choices=ASSOCIATED_MODULES, validators=[Optional()]
-    )
+    associated_module = SelectField("Associated Module", validators=[Optional()])
     tags = StringField("Tags", validators=[Length(max=255), Optional()])
     version = StringField("Version", validators=[Length(max=50), Optional()])
     is_active = BooleanField("Active", default=True)
