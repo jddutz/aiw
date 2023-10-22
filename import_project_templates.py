@@ -22,7 +22,9 @@ def load_template_data():
     # Loop through each template in the file
     for template_data in templates:
         print(template_data["name"])
-        existing = ProjectTemplate.query.filter_by(name=template_data["name"]).first()
+        existing = ProjectTemplate.query.filter_by(
+            project_template_name=template_data["name"]
+        ).first()
         if not existing:
             # Tags: Create if not exists and get Tag objects
             tags = []
@@ -46,7 +48,8 @@ def load_template_data():
 
             # Create the template object
             new_template = ProjectTemplate(
-                name=template_data["name"],
+                category=template_data["category"],
+                project_template_name=template_data["name"],
                 description=template_data["description"],
                 methodology=template_data["methodology"],
                 length=template_data["length"][:254],
