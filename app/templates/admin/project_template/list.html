@@ -3,10 +3,21 @@
 
 <div class="container mt-5">
   <h2 class="mb-4">Project Templates</h2>
-  <div class="d-flex align-items-start mb-4">
+  <div class="d-flex align-items-start gap-3 mb-4">
     <a href="{{ url_for('project_template.create') }}" class="btn btn-primary" title="Create a new Project Template">
       <i class="fas fa-plus"></i>
     </a>
+
+    <!-- Search Form -->
+    <form action="{{ url_for('project_template.list') }}" method="get" class="ml-3 flex-grow-1">
+      <div class="input-group">
+        <input type="search" name="q" class="form-control" placeholder="Search Project Templates..."
+          aria-label="Search project templates">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+    </form>
   </div>
 
   <!-- Check if there are any project templates -->

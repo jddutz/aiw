@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
+from sqlalchemy import or_
 
 from app import db
 from app.models import ProjectTemplate
@@ -46,11 +47,29 @@ blueprint = Blueprint(ROUTE_NAME, __name__)
 
 @blueprint.route("/", methods=["GET"])
 def list():
-    data = MODEL.query.all()
+    search_term = request.args.get("q", "")
+    if search_term:
+        text_fields_filter = or_(
+            MODEL.project_template_name.like(f"%{search_term}%"),
+            MODEL.description.like(f"%{search_term}%"),
+            MODEL.methodology.like(f"%{search_term}%"),
+            MODEL.length.like(f"%{search_term}%"),
+        )
+
+        tags_filter = MODEL.tags.any(name=f"%{search_term}%")
+        genres_filter = MODEL.genres.any(name=f"%{search_term}%")
+
+        search_filter = or_(text_fields_filter, tags_filter, genres_filter)
+
+        data = MODEL.query.filter(search_filter).all()
+    else:
+        data = MODEL.query.all()
+
     return render_template(
         f"{TEMPLATE_PATH}/list.html",
         data=data,
         show_ai_toolbox=True,
+        search_term=search_term,
     )
 
 
