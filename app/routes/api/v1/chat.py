@@ -11,7 +11,7 @@ chat_api_v1 = Blueprint("chat_api_v1", __name__)
 
 INITIALIZATION_MESSAGE_TITLE = "Initialization"
 HELP_CONTEXT_MESSAGE_TITLE = "Help Context Message"
-PAGE_CONTEXT_MESSAGE_TITLE = "Page Context Message"
+PAGE_CONTENT_MESSAGE_TITLE = "Page Content Message"
 SYSTEM_GREETING_MESSAGE_TITLE = "System Greeting Message"
 
 
@@ -43,24 +43,45 @@ def init_message_queue():
             }
         )
 
-    if request.is_json and "page_context" in request.json:
+    if request.is_json and "page_content" in request.json:
         # Retrieve context from the request body
-        page_context_message = ChatSystemMessage.query.filter_by(
-            title=PAGE_CONTEXT_MESSAGE_TITLE
+        page_content_message = ChatSystemMessage.query.filter_by(
+            title=PAGE_CONTENT_MESSAGE_TITLE
         ).first()
 
-    if page_context_message:
-        page_context = request.json.get("page_context")
+    if page_content_message:
+        page_content = request.json.get("page_content")
 
-    if page_context:
+    if page_content:
         messages.append(
             {
                 "role": "system",
-                "content": f"{page_context_message.content}: {page_context}",
+                "content": f"{page_content_message.content}: {page_content}",
             }
         )
 
     return messages
+
+
+def send_messages(messages, openai_model="gpt-3.5-turbo"):
+    # Check the current temperature
+    if "temperature" in request.json:
+        temperature = request.json["temperature"]
+    else:
+        temperature = 0.9
+
+    # Send the messages to OpenAI
+    openai_response = openai.ChatCompletion.create(
+        model=openai_model, messages=messages, temperature=temperature
+    )
+
+    ai_message = openai_response.choices[0].message["content"].strip()
+
+    # Create and add the AI's response to the chat history
+    ai_msg_instance = ChatMessage(role=ChatMessage.ASSISTANT, content=ai_message)
+    db.session.add(ai_msg_instance)
+
+    return ai_msg_instance
 
 
 @chat_api_v1.route("/new", methods=["POST"])
@@ -82,22 +103,7 @@ def new_conversation():
         }
     )
 
-    # Check the current temperature
-    if "temperature" in request.json:
-        temperature = request.json["temperature"]
-    else:
-        temperature = 0.9
-
-    # Send the messages to OpenAI
-    openai_response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo", messages=messages, temperature=temperature
-    )
-
-    ai_message = openai_response.choices[0].message["content"].strip()
-
-    # Create and add the AI's response to the chat history
-    ai_msg_instance = ChatMessage(role=ChatMessage.ASSISTANT, content=ai_message)
-    db.session.add(ai_msg_instance)
+    ai_msg_instance = send_messages(messages)
 
     chat_history.add_message(ai_msg_instance)
     db.session.commit()
@@ -111,6 +117,59 @@ def new_conversation():
             }
         ),
         201,
+    )
+
+
+@chat_api_v1.route("/instructions", methods=["POST"])
+def send_instructions():
+    # This endpoint is used to send specific instructions to the assistant
+    # It uses a more advanced model, and provides more comprehensive instructions
+    # than the chat interface
+    if not request.is_json:
+        return jsonify({"error": "Request mimetype must be application/json"}), 400
+
+    if "system_message_title" in request.json:
+        system_message_title = request.json.get("system_message_title")
+
+    if not system_message_title:
+        return jsonify({"error": "System message title is required"}), 400
+
+    messages = init_message_queue()
+
+    system_message = ChatSystemMessage.query.filter_by(
+        title=system_message_title
+    ).first()
+
+    if not system_message:
+        return jsonify(
+            {
+                "messages": [
+                    {
+                        "role": "assistant",
+                        "content": f"Sorry, I was unable to complete the request. I do not understand the instruction, '{system_message_title}'.",
+                    }
+                ]
+            }
+        )
+
+    messages.append(
+        {
+            "role": "system",
+            "content": system_message.content,
+        }
+    )
+
+    ai_msg_instance = send_messages(messages, openai_model="gpt-4")
+
+    return jsonify(
+        {
+            "messages": [
+                {
+                    "role": "assistant",
+                    "content": ai_msg_instance.content,
+                }
+            ]
+        }
     )
 
 

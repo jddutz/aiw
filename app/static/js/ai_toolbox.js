@@ -79,7 +79,7 @@ function renderChatMessages(messages) {
  * Extract the contents of the current page and return it as plain text
  * for use as context in REST API calls.
  */
-function loadPageContext() {
+function loadPageContent() {
     if (!aiwContentDiv) return '';
 
     let textValues = [];
@@ -136,7 +136,7 @@ function sendMessage() {
 
     var messageData = {
         help_context_id: help_context_id,
-        page_context: loadPageContext(),
+        page_content: loadPageContent(),
         content: messageContent
     };
 
@@ -176,7 +176,7 @@ function chat() {
     if (!currentConversationId) {
         let data = {
             help_context_id: help_context_id,
-            page_context: loadPageContext()
+            page_content: loadPageContent()
         };
 
         fetch('/api/v1/chat/new', {
@@ -201,6 +201,43 @@ function chat() {
     openChatInterface();
 }
 
+
+/**
+ * Toolbox function to send instructions to the AI assistant
+ */
+function send_instructions(system_message_title) {
+  // If there's no current conversation, send a starting message
+  let data = {
+      help_context_id: help_context_id,
+      page_content: loadPageContent(),
+      system_message_title: system_message_title
+  };
+
+  renderChatMessages([{
+    role: 'SYSTEM',
+    content: "Working on it, please wait. This may take a while..."
+  }]);
+
+  fetch('/api/v1/chat/instructions', {
+      method: 'POST',
+      body: JSON.stringify(data), // Convert the data object to a JSON string
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+  })
+      .then(response => response.json()) // Convert the response to a JavaScript object
+      .then(data => {
+          console.log(data);
+          renderChatMessages(data.messages);
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('Sorry, something went wrong starting the chat.');
+      });
+
+  openChatInterface();
+}
 
 /**
  * Toolbox function to start a help chat conversation

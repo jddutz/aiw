@@ -95,6 +95,23 @@ def create():
         form=form,
         model=None,
         show_ai_toolbox=True,
+        ai_toolbox_actions=[
+            {
+                "caption": "Update Description",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update Project Template Description')",
+            },
+            {
+                "caption": "Update Methodology",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update Project Template Methodology')",
+            },
+            {
+                "caption": "Update Project Structure",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update Project Template Structure')",
+            },
+        ],
     )
 
 
@@ -126,30 +143,28 @@ def edit(id):
         )
         return redirect(url_for(f"{ROUTE_NAME}.list"))
 
-    ai_toolbox_actions = [
-        {
-            "caption": "Update Description",
-            "icon": "fas fa-comment",
-            "js_function": "update_description()",
-        },
-        {
-            "caption": "Update Methodology",
-            "icon": "fas fa-comment",
-            "js_function": "update_methodology()",
-        },
-        {
-            "caption": "Update Project Structure",
-            "icon": "fas fa-comment",
-            "js_function": "update_project_structure()",
-        },
-    ]
-
     return render_template(
         f"{TEMPLATE_PATH}/edit.html",
         form=form,
         model=model,
         show_ai_toolbox=True,
-        ai_toolbox_actions=ai_toolbox_actions,
+        ai_toolbox_actions=[
+            {
+                "caption": "Update Description",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update Project Template Description')",
+            },
+            {
+                "caption": "Update Methodology",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update Project Template Methodology')",
+            },
+            {
+                "caption": "Update Project Structure",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update Project Template Structure')",
+            },
+        ],
     )
 
 

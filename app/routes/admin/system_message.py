@@ -91,6 +91,13 @@ def create():
         form=form,
         model=None,
         show_ai_toolbox=True,
+        ai_toolbox_actions=[
+            {
+                "caption": "Update System Message",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update System Message')",
+            },
+        ],
     )
 
 
@@ -122,16 +129,18 @@ def edit(id):
         )
         return redirect(url_for(f"{ROUTE_NAME}.list"))
 
-    ai_toolbox_actions = [
-        {"caption": "Capyion", "icon": "fas fa-comment", "js_function": "function()"}
-    ]
-
     return render_template(
         f"{TEMPLATE_PATH}/edit.html",
         form=form,
         model=model,
         show_ai_toolbox=True,
-        ai_toolbox_actions=ai_toolbox_actions,
+        ai_toolbox_actions=[
+            {
+                "caption": "Update Description",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update System Message Content')",
+            },
+        ],
     )
 
 
