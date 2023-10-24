@@ -161,14 +161,21 @@ def send_instructions():
 
     ai_msg_instance = send_messages(messages, openai_model="gpt-4")
 
+    chat_history = ChatHistory()
+    db.session.add(chat_history)
+
+    chat_history.add_message(ai_msg_instance)
+    db.session.commit()
+
     return jsonify(
         {
+            "id": chat_history.id,
             "messages": [
                 {
                     "role": "assistant",
                     "content": ai_msg_instance.content,
                 }
-            ]
+            ],
         }
     )
 

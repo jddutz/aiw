@@ -63,7 +63,7 @@
 
     <div class="form-group">
       <label for="structure">Structure (JSON format)</label>
-      {{ form.structure(class="form-control", placeholder="Provide a serialized JSON structure.", rows=5) }}
+      {{ form.structure(class="form-control", placeholder="Provide a serialized JSON structure.", rows=12) }}
       {% if form.structure.errors %}
       <span class="text-danger">{{ form.structure.errors[0] }}</span>
       {% endif %}
@@ -83,8 +83,4 @@
     </div>
   </form>
 </div>
-{% endblock %}
-
-{% block ai_toolbox_scripts %}
-<script src="{{ url_for('static', filename='js/toolbox/project_template_edit.js') }}"></script>
 {% endblock %}

@@ -61,6 +61,11 @@
   </ul>
   {% endif %}
 
+  {% if model.structure %}
+  <h5>Structure</h5>
+  <pre>{{ model.structure }}</pre>
+  {% endif %}
+
   <div class="mt-4">
     <button class="btn btn-secondary"
       onclick="showModalDialog('deleteModal','{{ url_for('project_template.delete', id=model.id) }}')">Delete</button>

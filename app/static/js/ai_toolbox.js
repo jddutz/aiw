@@ -229,6 +229,7 @@ function send_instructions(system_message_title) {
       .then(response => response.json()) // Convert the response to a JavaScript object
       .then(data => {
           console.log(data);
+          currentConversationId = data.id;
           renderChatMessages(data.messages);
       })
       .catch(error => {
