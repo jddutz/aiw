@@ -11,7 +11,9 @@
   <hr>
 
   <h5>Description</h5>
-  <p>{{ model.description }}</p>
+  {% for description_text in model.description.split('\n') %}
+  <p>{{ description_text }}</p>
+  {% endfor %}
 
   <h5>Methodology</h5>
   <ol>

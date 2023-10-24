@@ -14,7 +14,9 @@
   <p>{{ model.title }}</p>
 
   <h5>Content</h5>
-  <p>{{ model.content }}</p>
+  {% for content_text in model.content.split('\n') %}
+  <p>{{ content_text }}</p>
+  {% endfor %}
 
   <div class="mt-4">
     <button class="btn btn-secondary"

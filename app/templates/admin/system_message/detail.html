@@ -11,7 +11,9 @@
   <hr>
 
   <h5>Content</h5>
-  <p>{{ model.content }}</p>
+  {% for content_text in model.content.split('\n') %}
+  <p>{{ content_text }}</p>
+  {% endfor %}
 
   <h5>Type</h5>
   <p>{{ model.type or 'N/A' }}</p>
