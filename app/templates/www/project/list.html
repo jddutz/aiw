@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+  <h2 class="mb-4">Projects</h2>
+  <div class="d-flex align-items-start gap-3 mb-4">
+    <a href="{{ url_for('project.create') }}" class="btn btn-primary" title="Create a new Project">
+      <i class="fas fa-plus"></i>
+    </a>
+
+    <!-- Search Form -->
+    <form action="{{ url_for('project.list') }}" method="get" class="ml-3 flex-grow-1">
+      <div class="input-group">
+        <input type="search" name="q" class="form-control" placeholder="Search Projects..."
+          aria-label="Search projects">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Check if there are any projects -->
+  {% if data %}
+  <div class="list-group">
+    {% for record in data %}
+    <a href="{{ url_for('project.detail', id=record.id) }}" class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-between align-items-center"> <!-- added align-items-center -->
+        <h5 class="mb-1">{{ record.title }}</h5>
+        <div class="d-flex align-items-center"> <!-- added d-flex and align-items-center -->
+          <small class="mr-2">Last Modified: {{ record.modified.strftime('%Y-%m-%d') }}</small>
+        </div>
+      </div>
+      <p class="mb-1">{{ record.description[:100] }}{% if record.description|length > 100 %}...{% endif %}</p>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No projects found.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

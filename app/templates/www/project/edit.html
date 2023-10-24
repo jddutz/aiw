@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ "Edit Writing Project Settings" if model else "Create a New Writing Project" }}</h2>
+  <form method="POST" action="{{ url_for('project.edit', id=model.id) if model else url_for('project.create') }}">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.title.label }}<br>
+      {{ form.title(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.description.label }}<br>
+      {{ form.description(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.visibility.label }}<br>
+      {{ form.visibility(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.project_type.label }}<br>
+      {{ form.project_type(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.genre.label }}<br>
+      {{ form.genre(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.tags.label }}<br>
+      {{ form.tags(class="form-control") }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ "Save Changes" if model else "Create" }}</button>
+    <div class="mt-4">
+      <a href="{{ url_for('project.list') }}" class="btn btn-secondary">Back to Projects</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

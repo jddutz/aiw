@@ -3,4 +3,4 @@ from .user_registration_form import RegistrationForm
 from .system_message_edit_form import SystemMessageEditForm
 from .help_context_edit_form import HelpContextEditForm
 from .project_template_edit_form import ProjectTemplateEditForm
-from .project_edit_form import ProjectEditForm
+from .writing_project_edit_form import WritingProjectEditForm

@@ -26,7 +26,7 @@ flask_app.register_blueprint(
 
 # UI blueprints
 from app.routes.www.user import user_blueprint
-from app.routes.www.project import project_blueprint
+from app.routes.www.project import blueprint as project_blueprint
 from app.routes.www.story import story_blueprint
 
 flask_app.register_blueprint(user_blueprint, url_prefix="/user")
