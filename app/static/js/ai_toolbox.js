@@ -248,19 +248,31 @@ function help_chat() {
     alert('Help chat');
 }
 
-
 // EVENT LISTENERS
 
 // Floating Action Button + Context Menu event listener
-document.getElementById('aiToolboxButton').addEventListener('click', toggleContextMenu);
+aiToolboxButton = document.getElementById('aiToolboxButton');
+if (aiToolboxButton) {
+  // When the button is clicked, toggle the context menu
+  aiToolboxButton.addEventListener('click', toggleContextMenu);
+}
 
 // chatInterface button event listener
-document.getElementById('sendButton').addEventListener('click', sendMessage);
+chatInterfaceSendButton = document.getElementById('sendButton');
+if (chatInterfaceSendButton) {
+  // When the button is clicked, send the message to the AI assistant
+  chatInterfaceSendButton.addEventListener('click', sendMessage);
+}
 
 // chatInput event listener to send message on Enter key
-document.getElementById('chatInput').addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();  // Prevent the default behavior (newline in textarea, form submission, etc.)
-        sendMessage();  // Call the function to send the message
-    }
-});
+chatInputElement = document.getElementById('chatInput')
+if (chatInputElement) {
+  chatInputElement.addEventListener('keydown', function (event) {
+    // Prevent the default behavior (newline in textarea, form submission, etc.)
+    // On ENTER, call the function to send the message
+      if (event.key === 'Enter') {
+          event.preventDefault();  
+          sendMessage();  
+      }
+  });
+}

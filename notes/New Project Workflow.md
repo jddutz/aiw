@@ -1,42 +1,39 @@
-**AI-Powered Wizard for New Projects Workflow:**
+**1. Describe the Project:**
+   - When creating a new project, prompt the user to describe their project in a few sentences. 
+   - This description serves a dual purpose: it acts as the project's description and provides context for AI recommendations.
 
-1. **Project Initialization**:
-   - **User Action:** User clicks on "Start a New Project."
-   - **AI Prompt:** "Tell me about your project."
-   
-2. **Project Description**:
-   - **User Action:** User provides a brief description or intent of the project.
-   - **AI Clarification (if needed):** "Is this a fictional story, a non-fictional account, a speech, or something else?"
-   
-3. **Template Recommendation**:
-   - **AI Action:** Based on user input, the AI scans the available templates and suggests the most relevant ones.
-   - **AI Prompt:** "Based on what you've told me, [Template Name] might be a good fit. Would you like to use this, or would you prefer something else?"
-   - **User Action:** User confirms the template or requests an alternative.
+**2. AI Recommendations:**
+   - Pass the project description to the AI.
+   - The AI analyzes the description and recommends:
+     - A list of suitable project templates ranked by relevance.
+     - Suggested genres that might fit the project based on the description.
+   - These recommendations are based on keyword matching, sentiment analysis, and potential deep learning models trained on existing projects and their descriptions.
 
-4. **Genre Selection**:
-   - **AI Action:** If applicable, the AI lists relevant genres based on the selected template.
-   - **AI Prompt:** "Which genre best describes your project? Here are some suggestions: [List of Genres]."
-   - **User Action:** User selects the most appropriate genre or specifies their own.
+**3. Display AI Recommendations:**
+   - Present the AI-recommended project templates to the user, perhaps highlighting the top three choices.
+   - Similarly, show the suggested genres with an option for the user to confirm or change the selection.
+   - Optionally, provide a brief rationale for each recommendation, helping the user understand the AI's choice.
 
-5. **Customizable Elements Setup**:
-   - **AI Prompt:** "Would you like to set the mood, tone, or theme for your story now, or would you prefer to do this later?"
-   - **User Action:** User provides preferences or skips to the next step.
+**4. Input Additional Project Information:**
+   - While the AI might have made some initial suggestions, the user has the final say. They can:
+     - Confirm or change the selected template.
+     - Provide additional information such as project name (which might be pre-filled based on the template but editable).
+     - Set the project visibility.
+     - Add collaborators and reviewers.
 
-6. **Character and Setting Introduction (if relevant)**:
-   - **AI Prompt:** "Do you have any characters or settings in mind? Tell me about them!"
-   - **User Action:** User provides initial details about characters or settings, or skips if not ready.
-   
-7. **Story Structure Definition**:
-   - **AI Prompt:** "How do you envision the structure of your story? Would you like to start with a basic three-act structure, or something different?"
-   - **User Action:** User selects a structure or allows the AI to create a basic structure based on the template.
+**5. Create Writing Project:**
+   - This remains the same as the previous process: the new `WritingProjectModel` instance is created using both the user's input and the template details.
 
-8. **Initial AI Content Generation (Optional)**:
-   - **AI Offer:** "Would you like me to generate a starting point based on what you've told me?"
-   - **User Action:** User can accept the offer, provide more details for generation, or opt to start writing on their own.
+**6. Apply Project Structure (optional):**
+   - If the selected project template has a predefined structure, this structure can be applied to the new project.
 
-9. **Final Confirmation and Project Creation**:
-   - **AI Summary:** "Here's what we've set up: [Brief summary of project details]. Are you ready to start writing or would you like to make any changes?"
-   - **User Action:** User confirms and the project is created, or they go back to adjust any previous steps.
+**7. Confirmation and Redirect:**
+   - Notify the user that their project has been successfully created.
+   - Redirect them to the project's detailed view or another relevant page.
 
-10. **Project Dashboard Redirection**:
-   - **AI Action:** Upon confirmation, redirect the user to their new project dashboard where they can start writing, view AI suggestions, and adjust project settings.
+**8. Update Template Usage Count:**
+   - After the writing project is created, update the `usage_count` of the template used.
+
+**9. Additional Features:**
+   - Consider the ability to refine recommendations: If a user doesn't find any of the AI's initial template or genre suggestions relevant, provide an option to refine recommendations based on further input or questions.
+   - Over time, as more users use the platform, consider employing reinforcement learning. This would enable the AI to learn from user template and genre selections, refining its recommendations for future users.

@@ -13,7 +13,7 @@ from app.models.tag import Tag
 from datetime import datetime
 
 
-def load_template_data():
+async def load_template_data():
     # Load data from JSON file
     with open("project_templates.json", "r") as file:
         data = json.load(file)
@@ -23,7 +23,7 @@ def load_template_data():
     for template_data in templates:
         print(template_data["name"])
         existing = ProjectTemplateModel.query.filter_by(
-            project_template_name=template_data["name"]
+            title=template_data["name"]
         ).first()
         if not existing:
             # Tags: Create if not exists and get Tag objects
@@ -32,8 +32,8 @@ def load_template_data():
                 tag = Tag.query.filter_by(name=tag_name).first()
                 if not tag:
                     tag = Tag(name=tag_name, description=tag_name)
-                    db.session.add(tag)
-                    db.session.commit()
+                    await db.async_session.add(tag)
+                    await db.async_session.commit()
                 tags.append(tag)
 
             # Genres: Create if not exists and get GenreModel objects
@@ -42,14 +42,14 @@ def load_template_data():
                 genre = GenreModel.query.filter_by(name=genre_name).first()
                 if not genre:
                     genre = GenreModel(name=genre_name, description=genre_name)
-                    db.session.add(genre)
-                    db.session.commit()
+                    await db.async_session.add(genre)
+                    await db.async_session.commit()
                 genres.append(genre)
 
             # Create the template object
             new_template = ProjectTemplateModel(
                 category=template_data["category"],
-                project_template_name=template_data["name"],
+                title=template_data["name"],
                 description=template_data["description"],
                 methodology=template_data["methodology"],
                 length=template_data["length"][:254],
@@ -67,10 +67,10 @@ def load_template_data():
                 genres=genres,
             )
             new_template.set_links(template_data["links"])
-            db.session.add(new_template)
+            await db.async_session.add(new_template)
 
     # Commit all changes to the database
-    db.session.commit()
+    await db.async_session.commit()
 
 
 if __name__ == "__main__":

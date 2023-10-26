@@ -4,7 +4,7 @@ from app import db
 from app.models import NotificationModel
 
 
-def create_notification(notification_info):
+async def create_notification(notification_info):
     """
     Create a new NotificationModel based on the provided notification_info.
 
@@ -15,12 +15,12 @@ def create_notification(notification_info):
     - (NotificationModel): The newly created NotificationModel instance.
     """
     new_notification = NotificationModel(**notification_info)
-    db.session.add(new_notification)
-    db.session.commit()
+    await db.async_session.add(new_notification)
+    await db.async_session.commit()
     return new_notification
 
 
-def get_notification_by_id(notification_id):
+async def get_notification_by_id(notification_id):
     """
     Fetch a NotificationModel based on its ID.
 
@@ -33,7 +33,7 @@ def get_notification_by_id(notification_id):
     return NotificationModel.query.get(notification_id)
 
 
-def get_notifications_for_user(user_id, status="unread", limit=10):
+async def get_notifications_for_user(user_id, status="unread", limit=10):
     """
     Fetch all notifications associated with a user, filtered by status.
 
@@ -52,7 +52,7 @@ def get_notifications_for_user(user_id, status="unread", limit=10):
     return query.all()
 
 
-def mark_notification_as_read(notification_id):
+async def mark_notification_as_read(notification_id):
     """
     Mark a NotificationModel as read.
 
@@ -67,11 +67,11 @@ def mark_notification_as_read(notification_id):
         return False
 
     notification.status = "read"
-    db.session.commit()
+    await db.async_session.commit()
     return True
 
 
-def delete_notification(notification_id):
+async def delete_notification(notification_id):
     """
     Delete a NotificationModel based on its ID.
 
@@ -85,6 +85,6 @@ def delete_notification(notification_id):
     if not notification:
         return False
 
-    db.session.delete(notification)
-    db.session.commit()
+    await db.async_session.delete(notification)
+    await db.async_session.commit()
     return True

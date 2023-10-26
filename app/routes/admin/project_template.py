@@ -19,7 +19,7 @@ CACHED_CATEGORIES = None
 UPDATE_CACHE = None
 
 
-def load_categories():
+async def load_categories():
     global CACHED_CATEGORIES
     global UPDATE_CACHE
 
@@ -29,7 +29,7 @@ def load_categories():
             return CACHED_CATEGORIES
 
     categories = (
-        db.session.query(ProjectTemplateModel.category)
+        await db.async_session.query(ProjectTemplateModel.category)
         .distinct()
         .order_by(ProjectTemplateModel.category.asc())
         .all()
@@ -46,11 +46,11 @@ blueprint = Blueprint(ROUTE_NAME, __name__)
 
 
 @blueprint.route("/", methods=["GET"])
-def list():
+async def list():
     search_term = request.args.get("q", "")
     if search_term:
         text_fields_filter = or_(
-            MODEL.project_template_name.like(f"%{search_term}%"),
+            MODEL.title.like(f"%{search_term}%"),
             MODEL.description.like(f"%{search_term}%"),
             MODEL.methodology.like(f"%{search_term}%"),
             MODEL.length.like(f"%{search_term}%"),
@@ -74,18 +74,18 @@ def list():
 
 
 @blueprint.route("/create", methods=["GET", "POST"])
-def create():
+async def create():
     form = EDIT_FORM()
     form.category.choices = load_categories()
 
     if form.validate_on_submit():
         model = MODEL()
         form.populate_obj(obj=model)
-        db.session.add(model)
-        db.session.commit()
+        await db.async_session.add(model)
+        await db.async_session.commit()
 
         flash(
-            f"{MODEL_DESC}, {model.project_template_name}, created successfully!",
+            f"{MODEL_DESC}, {model.title}, created successfully!",
             "success",
         )
         return redirect(url_for(f"{ROUTE_NAME}.list"))
@@ -116,7 +116,7 @@ def create():
 
 
 @blueprint.route("/<int:id>", methods=["GET"])
-def detail(id):
+async def detail(id):
     model = MODEL.query.get_or_404(id)
 
     return render_template(
@@ -127,7 +127,7 @@ def detail(id):
 
 
 @blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-def edit(id):
+async def edit(id):
     model = MODEL.query.get_or_404(id)
 
     form = EDIT_FORM(obj=model)
@@ -135,10 +135,10 @@ def edit(id):
 
     if form.validate_on_submit():
         form.populate_obj(model)
-        db.session.commit()
+        await db.async_session.commit()
 
         flash(
-            f"{MODEL_DESC}, {model.project_template_name} updated successfully!",
+            f"{MODEL_DESC}, {model.title} updated successfully!",
             "success",
         )
         return redirect(url_for(f"{ROUTE_NAME}.list"))
@@ -169,12 +169,12 @@ def edit(id):
 
 
 @blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
-def delete(id):
+async def delete(id):
     # Retrieve the model by its ID
     model = MODEL.query.get_or_404(id)
-    db.session.delete(model)
-    db.session.commit()
+    await db.async_session.delete(model)
+    await db.async_session.commit()
 
-    flash(f"{MODEL_DESC}, {model.project_template_name}, deleted!", "success")
+    flash(f"{MODEL_DESC}, {model.title}, deleted!", "success")
 
     return redirect(url_for(f"{ROUTE_NAME}.list"))

@@ -16,35 +16,29 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `notification`
+-- Table structure for table `reviewers_link`
 --
 
-DROP TABLE IF EXISTS `notification`;
+DROP TABLE IF EXISTS `reviewers_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notification` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reviewers_link` (
+  `writing_project_id` int NOT NULL,
   `user_id` int NOT NULL,
-  `message` varchar(500) NOT NULL,
-  `notification_type` varchar(120) NOT NULL,
-  `status` varchar(50) NOT NULL,
-  `created` datetime DEFAULT NULL,
-  `last_modified` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`writing_project_id`,`user_id`),
   KEY `user_id` (`user_id`),
-  KEY `ix_notification_created` (`created`),
-  KEY `ix_notification_last_modified` (`last_modified`),
-  CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `reviewers_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `reviewers_link_ibfk_2` FOREIGN KEY (`writing_project_id`) REFERENCES `writing_projects` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `notification`
+-- Dumping data for table `reviewers_link`
 --
 
-LOCK TABLES `notification` WRITE;
-/*!40000 ALTER TABLE `notification` DISABLE KEYS */;
-/*!40000 ALTER TABLE `notification` ENABLE KEYS */;
+LOCK TABLES `reviewers_link` WRITE;
+/*!40000 ALTER TABLE `reviewers_link` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reviewers_link` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -56,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-24 17:38:53
+-- Dump completed on 2023-10-26  7:35:31

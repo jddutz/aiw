@@ -16,29 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `writing_project_tags`
+-- Table structure for table `chat_histories`
 --
 
-DROP TABLE IF EXISTS `writing_project_tags`;
+DROP TABLE IF EXISTS `chat_histories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `writing_project_tags` (
-  `writing_project_id` int NOT NULL,
-  `tag_id` int NOT NULL,
-  PRIMARY KEY (`writing_project_id`,`tag_id`),
-  KEY `tag_id` (`tag_id`),
-  CONSTRAINT `writing_project_tags_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`),
-  CONSTRAINT `writing_project_tags_ibfk_2` FOREIGN KEY (`writing_project_id`) REFERENCES `writing_project` (`id`)
+CREATE TABLE `chat_histories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `created` timestamp NULL DEFAULT NULL,
+  `created_by_id` int DEFAULT NULL,
+  `modified` timestamp NULL DEFAULT NULL,
+  `modified_by_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `created_by_id` (`created_by_id`),
+  KEY `modified_by_id` (`modified_by_id`),
+  CONSTRAINT `chat_histories_ibfk_1` FOREIGN KEY (`created_by_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `chat_histories_ibfk_2` FOREIGN KEY (`modified_by_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `writing_project_tags`
+-- Dumping data for table `chat_histories`
 --
 
-LOCK TABLES `writing_project_tags` WRITE;
-/*!40000 ALTER TABLE `writing_project_tags` DISABLE KEYS */;
-/*!40000 ALTER TABLE `writing_project_tags` ENABLE KEYS */;
+LOCK TABLES `chat_histories` WRITE;
+/*!40000 ALTER TABLE `chat_histories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `chat_histories` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-24 17:38:51
+-- Dump completed on 2023-10-26  7:35:30

@@ -3,9 +3,11 @@ In directory: .
 .gitignore
 directory_structure.py
 directory_structure.txt
+import_project_templates.py
 project_templates.json
+project_template_categories.csv
 randkey.py
-README.md
+readme.md
 requirements.txt
 
 In directory: .\app
@@ -13,30 +15,40 @@ chat_gpt.py
 exceptions.py
 __init__.py
 
-In directory: .\app\db
-conversations.py
-projects.py
-__init__.py
-
 In directory: .\app\forms
-login_form.py
-registration_form.py
+genre_edit_form.py
+help_context_edit_form.py
+project_template_edit_form.py
+system_message_edit_form.py
+user_login_form.py
+user_registration_form.py
+writing_project_create_form.py
+writing_project_edit_form.py
 __init__.py
 
 In directory: .\app\models
-activity.py
+base_model.py
 chat_history.py
 chat_message.py
-collection.py
+chat_system_message.py
+genre.py
+help_context.py
 notification.py
-relationships.py
+project_template.py
 story_part.py
 user.py
 writing_project.py
 __init__.py
 
 In directory: .\app\routes
+route_template.py
 __init__.py
+
+In directory: .\app\routes\admin
+genre.py
+help_context.py
+project_template.py
+system_message.py
 
 In directory: .\app\routes\api\v1
 chat.py
@@ -44,13 +56,11 @@ project.py
 user.py
 
 In directory: .\app\routes\www
-chat.py
 project.py
 story.py
 user.py
 
 In directory: .\app\services
-activity_manager.py
 chat_history_manager.py
 chat_message_manager.py
 notification_manager.py
@@ -63,18 +73,59 @@ __init__.py
 In directory: .\app\static\css
 aiw.css
 
+In directory: .\app\static\js
+aiw.js
+ai_toolbox.js
+
 In directory: .\app\templates
 base.html
-create_project.html
 dashboard.html
-delete_project.html
 landing_page.html
+_index_project_widget.html
+
+In directory: .\app\templates\admin
+home.html
+
+In directory: .\app\templates\admin\genre
+detail.html
+edit.html
+list.html
+
+In directory: .\app\templates\admin\help_context
+detail.html
+edit.html
+list.html
+
+In directory: .\app\templates\admin\project_template
+detail.html
+edit.html
+list.html
+
+In directory: .\app\templates\admin\system_message
+detail.html
+edit.html
+list.html
+
+In directory: .\app\templates\includes
+delete_modal.html
+
+In directory: .\app\templates\user
 login.html
 profile.html
-project_detail.html
 register.html
+
+In directory: .\app\templates\www\project
+create.html
+detail.html
+edit.html
+list.html
+new_project_dialog.html
 update_project.html
-_index_project_widget.html
+
+In directory: .\app\templates\_new
+detail.html
+edit.html
+index.html
 
 In directory: .\app\testing
 test_token_manager.py
@@ -87,6 +138,11 @@ README
 script.py.mako
 
 In directory: .\migrations\versions
-659ad5610d40_initial_migration.py
-aaf23a3614b7_implemented_core_models.py
-d3bd5e51645c_updated_user_model.py
+403319cac373_added_chat_modules.py
+4fc244d5ab24_setup_writing_projects.py
+e403a1d4fa82_initial_setup.py
+
+In directory: .\notes
+AI Writer project summary.md
+New Project Workflow.md
+todo_items.txt

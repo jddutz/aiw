@@ -54,14 +54,14 @@ class ProjectTemplateModel(BaseModel):
         return self.tags.split(";") if self.tags else []
 
     def caption(self):
-        return f"{self.project_template_name}"
+        return f"{self.title}"
 
     def to_dict(self) -> dict:
         instance_data = super().to_dict()
         instance_data.update(
             {
                 "category": self.category,
-                "project_template_name": self.project_template_name,
+                "title": self.title,
                 "description": self.description,
                 "methodology": self.methodology,
                 "length": self.length,
@@ -79,7 +79,7 @@ class ProjectTemplateModel(BaseModel):
     def from_dict(cls, data: dict) -> "ProjectTemplateModel":
         instance = super().from_dict(data)
         instance.category = data.get("category", "")
-        instance.project_template_name = data.get("project_template_name", "")
+        instance.title = data.get("title", "")
         instance.description = data.get("description", "")
         instance.methodology = data.get("methodology", "")
         instance.length = data.get("length", "")
@@ -94,4 +94,4 @@ class ProjectTemplateModel(BaseModel):
         return instance
 
     def __repr__(self) -> str:
-        return f"<ProjectTemplateModel id={self.id}, name={self.project_template_name}>"
+        return f"<ProjectTemplateModel id={self.id}, name={self.title}>"

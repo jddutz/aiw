@@ -1,8 +1,10 @@
 # app/routes/__init__.py
 
+import asyncio
 from flask import session, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 from app import flask_app
+from app.forms import AIDialogForm
 
 from app.services import (
     notification_manager,
@@ -46,7 +48,7 @@ flask_app.register_blueprint(project_api_v1, url_prefix="/api/v1/project")
 
 # Home/index page
 @flask_app.route("/")
-def index():
+async def index():
     if current_user.is_authenticated:
         # If the user is authenticated, redirect them to the home/dashboard page
         return redirect(url_for("home"))
@@ -57,17 +59,19 @@ def index():
 
 @flask_app.route("/home", methods=["GET"])
 @login_required
-def home():
-    user_id = current_user.id  # Assuming you're using Flask-Login's current_user
+async def home():
+    user_id = current_user.id
 
-    # Gather notifications using the service
-    notifications = notification_manager.get_notifications_for_user(user_id, limit=10)
-
-    # Gather projects using the service
-    projects = project_manager.get_recent_projects_for_user(user_id, limit=10)
+    notifications, projects = await asyncio.gather(
+        # Gather notifications using the service
+        notification_manager.get_notifications_for_user(user_id, limit=10),
+        # Gather projects using the service
+        project_manager.get_recent_projects_for_user(user_id, limit=10),
+    )
 
     return render_template(
         "dashboard.html",
+        ai_dialog=AIDialogForm(),
         notifications=notifications,
         projects=projects,
     )
@@ -75,6 +79,6 @@ def home():
 
 @flask_app.route("/admin", methods=["GET"])
 @login_required
-def admin():
+async def admin():
     # If the user is not authenticated, render the landing page
     return render_template("admin/home.html")

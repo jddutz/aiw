@@ -13,7 +13,9 @@
     <h4>Quick Actions</h4>
     <ul class="list-group">
       <li class="list-group-item">
-        <a class="quick-action" href="{{ url_for('project.create') }}">New Writing Project</a>
+        <button class="btn btn-primary"
+          onclick="showModalDialog('aiDialog', '{{ url_for('project.new') }}', 'Please describe your new writing project.')">New
+          Writing Project</button>
       </li>
     </ul>
   </div>

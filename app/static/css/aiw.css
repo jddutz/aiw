@@ -2,32 +2,22 @@
 /* primary color = rgb(0, 60, 255); */
 
 
-/* Reset font style for use in <pre> tags */
-.text-default {
-  /* Reset font properties */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 16px; /* Common default size */
-  font-weight: normal;
-  font-style: normal;
-  text-transform: none;
-  letter-spacing: normal;
-  line-height: 1.5; /* Spacious line height for readability */
-  color: #333; /* Default text color, adjust as needed */
-  text-align: left;
-  text-decoration: none;
+.modal-title {
+  display: flex;
+  align-items: center;
+}
 
-  /* White space management */
-  white-space: pre-line; /* Preserves newlines and spaces, but wraps long lines. Useful for multiline text fields */
-
-  /* Reset any added padding and margin */
-  padding: 0;
-  margin: 0;
-
-  /* Additional resets as needed */
-  border: none;
-  background: none;
-  outline: none;
-  box-shadow: none;
+.robot-icon {
+  background-color: #007bff;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem; 
+  margin-right: 10px;
 }
 
 

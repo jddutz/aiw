@@ -1,0 +1,25 @@
+<div id="aiDialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newProjectDialogTitle"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      {% include "includes/ai_dialog_header.html" %}
+      <form id="aiDialogForm" method="POST">
+        <div class="modal-body">
+          {{ ai_dialog.hidden_tag() }}
+          {{ ai_dialog.input_field(class="form-control", rows="3") }}
+          {% if ai_dialog.input_field.errors %}
+          <div class="alert alert-danger" role="alert">
+            {% for error in ai_dialog.input_field.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          {{ ai_dialog.submit_button(class="btn btn-primary") }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

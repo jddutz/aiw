@@ -4,7 +4,7 @@ from app import db
 from app.models import ChatMessageModel, ChatHistoryModel
 
 
-def create_message(data):
+async def create_message(data):
     """
     Create a new ChatMessageModel based on the provided data.
 
@@ -15,12 +15,12 @@ def create_message(data):
     - (ChatMessageModel): The newly created ChatMessageModel instance.
     """
     message = ChatMessageModel.from_dict(data)
-    db.session.add(message)
-    db.session.commit()
+    await db.async_session.add(message)
+    await db.async_session.commit()
     return message
 
 
-def get_message_by_id(message_id):
+async def get_message_by_id(message_id):
     """
     Retrieve a ChatMessageModel by its ID.
 
@@ -33,7 +33,7 @@ def get_message_by_id(message_id):
     return ChatMessageModel.query.get(message_id)
 
 
-def get_all_messages_by_chat_history_id(chat_history_id):
+async def get_all_messages_by_chat_history_id(chat_history_id):
     """
     Retrieve all ChatMessages associated with a particular ChatHistoryModel.
 
@@ -46,7 +46,7 @@ def get_all_messages_by_chat_history_id(chat_history_id):
     return ChatMessageModel.query.filter_by(chat_history_id=chat_history_id).all()
 
 
-def update_message(message_id, data):
+async def update_message(message_id, data):
     """
     Update a ChatMessageModel with new data.
 
@@ -61,12 +61,12 @@ def update_message(message_id, data):
     if message:
         for key, value in data.items():
             setattr(message, key, value)
-        db.session.commit()
+        await db.async_session.commit()
         return message
     return None
 
 
-def delete_message(message_id):
+async def delete_message(message_id):
     """
     Delete a ChatMessageModel by its ID.
 
@@ -78,7 +78,7 @@ def delete_message(message_id):
     """
     message = ChatMessageModel.query.get(message_id)
     if message:
-        db.session.delete(message)
-        db.session.commit()
+        await db.async_session.delete(message)
+        await db.async_session.commit()
         return True
     return False

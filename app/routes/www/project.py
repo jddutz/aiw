@@ -1,7 +1,7 @@
 # app/routes/www/project.py
 
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, redirect, url_for, request, session, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import current_user
 from sqlalchemy import or_
 
@@ -9,6 +9,7 @@ from app import db
 from app.models import WritingProjectModel, ProjectTemplateModel, GenreModel
 from app.forms.writing_project_create_form import WritingProjectCreateForm
 from app.forms.writing_project_edit_form import WritingProjectEditForm
+from app.forms.ai_dialog_form import AIDialogForm
 
 MODEL = WritingProjectModel
 MODEL_DESC = "Writing Project"
@@ -22,7 +23,7 @@ blueprint = Blueprint("project", __name__)
 
 
 @blueprint.route("/", methods=["GET"])
-def list():
+async def list():
     search_term = request.args.get("q", "")
     if search_term:
         text_fields_filter = or_(
@@ -48,13 +49,35 @@ def list():
     )
 
 
+@blueprint.route("/new", methods=["GET", "POST"])
+async def new():
+    ai_dialog = AIDialogForm()
+    form = CREATE_FORM()
+
+    if ai_dialog.validate_on_submit():
+        form.description.data = ai_dialog.input_field.data
+
+    return render_template(
+        f"{TEMPLATE_PATH}/create.html",
+        form=form,
+        model=None,
+        show_ai_toolbox=True,
+        ai_toolbox_actions=[
+            {
+                "caption": "Update Description",
+                "icon": "fas fa-comment",
+                "js_function": "send_instructions('Update Project Description')",
+            },
+        ],
+    )
+
+
 @blueprint.route("/create", methods=["GET", "POST"])
-def create():
+async def create():
     form = CREATE_FORM()
     form.genre_id.choices = [(genre.id, genre.name) for genre in GenreModel.query.all()]
     form.project_template.choices = [
-        (template.id, template.project_template_name)
-        for template in ProjectTemplateModel.query.all()
+        (template.id, template.title) for template in ProjectTemplateModel.query.all()
     ]
 
     if form.validate_on_submit():
@@ -63,12 +86,8 @@ def create():
         project_template_id = form.project_template.data
         if project_template_id:
             project_template = ProjectTemplateModel.query.get(project_template_id)
-            model.project_type = project_template.project_template_name
-            # TODO: unpack project_template.structure
-
-        tags_str = [tag.strip() for tag in form.tags.data.split(",")]
-        tags_obj = [Tag(name=tag_name) for tag_name in tags_str if tag_name != ""]
-        model.tags = tags_obj
+            model.project_type = project_template.title
+            # TODO: unpack project_template.structure and create the appropriate sections
 
         model.owner_id = current_user.id
 
@@ -76,8 +95,8 @@ def create():
         del form.tags
         form.populate_obj(obj=model)
 
-        db.session.add(model)
-        db.session.commit()
+        await db.async_session.add(model)
+        await db.async_session.commit()
 
         flash(
             f"{MODEL_DESC}, {model.title}, created successfully!",
@@ -101,7 +120,7 @@ def create():
 
 
 @blueprint.route("/<int:id>", methods=["GET"])
-def detail(id):
+async def detail(id):
     model = MODEL.query.get_or_404(id)
 
     return render_template(
@@ -112,7 +131,7 @@ def detail(id):
 
 
 @blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-def edit(id):
+async def edit(id):
     model = MODEL.query.get_or_404(id)
 
     form = EDIT_FORM(obj=model)
@@ -120,10 +139,10 @@ def edit(id):
 
     if form.validate_on_submit():
         form.populate_obj(model)
-        db.session.commit()
+        await db.async_session.commit()
 
         flash(
-            f"{MODEL_DESC}, {model.project_template_name} updated successfully!",
+            f"{MODEL_DESC}, {model.title} updated successfully!",
             "success",
         )
         return redirect(url_for(f"{ROUTE_NAME}.list"))
@@ -144,12 +163,12 @@ def edit(id):
 
 
 @blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
-def delete(id):
+async def delete(id):
     # Retrieve the model by its ID
     model = MODEL.query.get_or_404(id)
-    db.session.delete(model)
-    db.session.commit()
+    await db.async_session.delete(model)
+    await db.async_session.commit()
 
-    flash(f"{MODEL_DESC}, {model.project_template_name}, deleted!", "success")
+    flash(f"{MODEL_DESC}, {model.title}, deleted!", "success")
 
     return redirect(url_for(f"{ROUTE_NAME}.list"))

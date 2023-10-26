@@ -20,7 +20,7 @@ PAGE_CONTENT_MESSAGE_TITLE = "Page Content Message"
 SYSTEM_GREETING_MESSAGE_TITLE = "System Greeting Message"
 
 
-def init_message_queue():
+async def init_message_queue():
     # Fetch the cached instructional message or retrieve from DB if not cached
     initialization_message = ChatSystemMessageModel.query.filter_by(
         title=INITIALIZATION_MESSAGE_TITLE
@@ -70,7 +70,7 @@ def init_message_queue():
     return messages
 
 
-def send_messages(messages, openai_model="gpt-3.5-turbo"):
+async def send_messages(messages, openai_model="gpt-3.5-turbo"):
     # Check the current temperature
     if "temperature" in request.json:
         temperature = request.json["temperature"]
@@ -88,15 +88,15 @@ def send_messages(messages, openai_model="gpt-3.5-turbo"):
     ai_msg_instance = ChatMessageModel(
         role=ChatMessageModel.ASSISTANT, content=ai_message
     )
-    db.session.add(ai_msg_instance)
+    await db.async_session.add(ai_msg_instance)
 
     return ai_msg_instance
 
 
 @chat_api_v1.route("/new", methods=["POST"])
-def new_conversation():
+async def new_conversation():
     chat_history = ChatHistoryModel()
-    db.session.add(chat_history)
+    await db.async_session.add(chat_history)
 
     messages = init_message_queue()
 
@@ -115,7 +115,7 @@ def new_conversation():
     ai_msg_instance = send_messages(messages)
 
     chat_history.add_message(ai_msg_instance)
-    db.session.commit()
+    await db.async_session.commit()
 
     # Select the last 20 messages from the chat history
     return (
@@ -130,7 +130,7 @@ def new_conversation():
 
 
 @chat_api_v1.route("/instructions", methods=["POST"])
-def send_instructions():
+async def send_instructions():
     # This endpoint is used to send specific instructions to the assistant
     # It uses a more advanced model, and provides more comprehensive instructions
     # than the chat interface
@@ -171,10 +171,10 @@ def send_instructions():
     ai_msg_instance = send_messages(messages, openai_model="gpt-4")
 
     chat_history = ChatHistoryModel()
-    db.session.add(chat_history)
+    await db.async_session.add(chat_history)
 
     chat_history.add_message(ai_msg_instance)
-    db.session.commit()
+    await db.async_session.commit()
 
     return jsonify(
         {
@@ -190,7 +190,7 @@ def send_instructions():
 
 
 @chat_api_v1.route("/<int:conversation_id>", methods=["GET"])
-def get_conversation(conversation_id):
+async def get_conversation(conversation_id):
     chat_history = ChatHistoryModel.query.get(conversation_id)
     if chat_history is None:
         return jsonify({"error": "Conversation not found"}), 404
@@ -199,7 +199,7 @@ def get_conversation(conversation_id):
 
 @chat_api_v1.route("/", methods=["POST"])
 @chat_api_v1.route("/<int:conversation_id>", methods=["POST"])
-def send_message(conversation_id=None):
+async def send_message(conversation_id=None):
     if not request.is_json:
         return jsonify({"error": "Request mimetype must be application/json"}), 400
 
@@ -223,13 +223,13 @@ def send_message(conversation_id=None):
             messages.append({"role": msg.role, "content": msg.content})
     else:
         chat_history = ChatHistoryModel()
-        db.session.add(chat_history)
+        await db.async_session.add(chat_history)
 
     # Create and add the user's message to the chat history
     user_msg_instance = ChatMessageModel(
         role=ChatMessageModel.USER, content=user_message
     )
-    db.session.add(user_msg_instance)
+    await db.async_session.add(user_msg_instance)
 
     chat_history.add_message(user_msg_instance)
 
@@ -253,10 +253,10 @@ def send_message(conversation_id=None):
     ai_msg_instance = ChatMessageModel(
         role=ChatMessageModel.ASSISTANT, content=ai_message
     )
-    db.session.add(ai_msg_instance)
+    await db.async_session.add(ai_msg_instance)
 
     chat_history.add_message(ai_msg_instance)
-    db.session.commit()
+    await db.async_session.commit()
 
     return jsonify(
         {

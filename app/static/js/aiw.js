@@ -1,22 +1,33 @@
-function showModalDialog(dialogId, targetUrl) {
+function showModalDialog(dialogId, onSubmit, promptText="") {
   var modal = $('#' + dialogId);
 
-  // Check if modal and submit button exist
+  // Check if modal exists
   if (modal.length === 0) {
     console.error('Modal dialog, ' + dialogId + ', not found.');
     return;
   }
 
-  var submitButton = $('#' + dialogId + 'Submit');
+  console.debug('Showing modal dialog, ' + dialogId + '.');
+  console.debug(promptText);
 
-  // Check if modal and submit button exist
-  if (modal.length === 0) {
-    console.error('Modal dialog submit button, ' + dialogId + 'Submit, not found.');
-    return;
+  if (promptText) {
+    // Check if modal prompt text exists
+    var modalPrompt = $('#' + dialogId + 'Prompt');
+
+    if (modalPrompt.length === 0) {
+      console.error('Element ID, #' + dialogId + 'Prompt, not found.');
+    }
+    else {
+      modalPrompt.text(promptText);}
   }
 
-  // Update the dialog submit button's href to the target endpoint
-  submitButton.attr('href', targetUrl);
+  var form = $('#' + dialogId + 'Form');
+
+  // Check if form exists
+  if (form.length > 0) {
+    console.debug('Setting form action to ' + onSubmit + '.');
+    form.attr('action', onSubmit);
+  }
 
   // Show the modal
   modal.modal('show');

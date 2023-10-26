@@ -4,7 +4,7 @@ from app import db
 from app.models import StoryPartModel
 
 
-def create_story_part(story_part_data):
+async def create_story_part(story_part_data):
     """
     Create a new StoryPartModel based on the provided data.
 
@@ -15,12 +15,12 @@ def create_story_part(story_part_data):
     - (StoryPartModel): The newly created StoryPartModel instance.
     """
     story_part = StoryPartModel(**story_part_data)
-    db.session.add(story_part)
-    db.session.commit()
+    await db.async_session.add(story_part)
+    await db.async_session.commit()
     return story_part
 
 
-def get_story_part_by_id(story_part_id):
+async def get_story_part_by_id(story_part_id):
     """
     Retrieve a StoryPartModel by its ID.
 
@@ -33,7 +33,7 @@ def get_story_part_by_id(story_part_id):
     return StoryPartModel.query.get(story_part_id)
 
 
-def update_story_part(story_part_id, updated_data):
+async def update_story_part(story_part_id, updated_data):
     """
     Update an existing StoryPartModel based on provided data.
 
@@ -48,12 +48,12 @@ def update_story_part(story_part_id, updated_data):
     if story_part:
         for key, value in updated_data.items():
             setattr(story_part, key, value)
-        db.session.commit()
+        await db.async_session.commit()
         return story_part
     return None
 
 
-def delete_story_part(story_part_id):
+async def delete_story_part(story_part_id):
     """
     Delete a StoryPartModel by its ID.
 
@@ -65,13 +65,13 @@ def delete_story_part(story_part_id):
     """
     story_part = StoryPartModel.query.get(story_part_id)
     if story_part:
-        db.session.delete(story_part)
-        db.session.commit()
+        await db.async_session.delete(story_part)
+        await db.async_session.commit()
         return True
     return False
 
 
-def get_child_story_parts(parent_id):
+async def get_child_story_parts(parent_id):
     """
     Retrieve all child StoryParts of a given StoryPartModel.
 
@@ -87,7 +87,7 @@ def get_child_story_parts(parent_id):
     return []
 
 
-def get_story_parts_for_project(writing_project_id):
+async def get_story_parts_for_project(writing_project_id):
     """
     Retrieve all StoryParts associated with a given WritingProjectModel.
 

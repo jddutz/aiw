@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `user`
+-- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
+CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) DEFAULT NULL,
   `username_normalized` varchar(50) DEFAULT NULL,
@@ -36,21 +36,21 @@ CREATE TABLE `user` (
   `last_login` datetime DEFAULT NULL,
   `failed_login_count` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `ix_user_email` (`email`),
-  UNIQUE KEY `ix_user_username` (`username`),
-  KEY `ix_user_email_normalized` (`email_normalized`),
-  KEY `ix_user_username_normalized` (`username_normalized`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `ix_users_email` (`email`),
+  UNIQUE KEY `ix_users_username` (`username`),
+  KEY `ix_users_email_normalized` (`email_normalized`),
+  KEY `ix_users_username_normalized` (`username_normalized`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `users`
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'william','william',NULL,NULL,'$2b$12$n6JDcy9w3BE0shhWGFBPl.vHY.p7UwfnGir/7PGrbZnX3OYjxup6y','2023-10-21 15:15:07','2023-10-24 22:30:08',1,0,'2023-10-24 22:30:08',0),(2,'testuser','testuser',NULL,NULL,'$2b$12$6hlSoY3Xg4xWRHhgsTAiReK3ZAiFGKVgHGnKalYwMCWwrOWRE5rVC','2023-10-23 04:47:13','2023-10-23 04:47:13',1,0,NULL,0);
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'william','william',NULL,NULL,'$2b$12$z40Dpu1ClTDJFQ7FMCe1UeAWuMJtey1unxkmTw/ALJ3ZFSlZnU662','2023-10-26 12:37:02','2023-10-26 12:37:02',1,0,NULL,0);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -62,4 +62,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-24 17:38:52
+-- Dump completed on 2023-10-26  7:35:30

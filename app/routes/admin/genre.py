@@ -22,7 +22,7 @@ blueprint = Blueprint(ROUTE_NAME, __name__)
 
 
 @blueprint.route("/", methods=["GET"])
-def list():
+async def list():
     search_term = request.args.get("q", "")
     if search_term:
         search_filter = or_(
@@ -43,14 +43,14 @@ def list():
 
 
 @blueprint.route("/create", methods=["GET", "POST"])
-def create():
+async def create():
     form = EDIT_FORM()
 
     if form.validate_on_submit():
         model = MODEL()
         form.populate_obj(obj=model)
-        db.session.add(model)
-        db.session.commit()
+        await db.async_session.add(model)
+        await db.async_session.commit()
 
         flash(
             f"{MODEL_DESC}, {model.title}, created successfully!",
@@ -74,7 +74,7 @@ def create():
 
 
 @blueprint.route("/<int:id>", methods=["GET"])
-def detail(id):
+async def detail(id):
     model = MODEL.query.get_or_404(id)
 
     return render_template(
@@ -85,14 +85,14 @@ def detail(id):
 
 
 @blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-def edit(id):
+async def edit(id):
     model = MODEL.query.get_or_404(id)
 
     form = EDIT_FORM(obj=model)
 
     if form.validate_on_submit():
         form.populate_obj(model)
-        db.session.commit()
+        await db.async_session.commit()
 
         flash(
             f"{MODEL_DESC}, {model.title} updated successfully!",
@@ -116,11 +116,11 @@ def edit(id):
 
 
 @blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
-def delete(id):
+async def delete(id):
     # Retrieve the model by its ID
     model = MODEL.query.get_or_404(id)
-    db.session.delete(model)
-    db.session.commit()
+    await db.async_session.delete(model)
+    await db.async_session.commit()
 
     flash(f"{MODEL_DESC}, {model.title}, deleted!", "success")
 

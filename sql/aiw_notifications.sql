@@ -16,29 +16,39 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `collaborators`
+-- Table structure for table `notifications`
 --
 
-DROP TABLE IF EXISTS `collaborators`;
+DROP TABLE IF EXISTS `notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `collaborators` (
-  `writing_project_id` int NOT NULL,
+CREATE TABLE `notifications` (
   `user_id` int NOT NULL,
-  PRIMARY KEY (`writing_project_id`,`user_id`),
+  `message` varchar(500) NOT NULL,
+  `notification_type` varchar(120) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `created` timestamp NULL DEFAULT NULL,
+  `created_by_id` int DEFAULT NULL,
+  `modified` timestamp NULL DEFAULT NULL,
+  `modified_by_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `created_by_id` (`created_by_id`),
+  KEY `modified_by_id` (`modified_by_id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `collaborators_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `collaborators_ibfk_2` FOREIGN KEY (`writing_project_id`) REFERENCES `writing_project` (`id`)
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`created_by_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `notifications_ibfk_2` FOREIGN KEY (`modified_by_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `notifications_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `collaborators`
+-- Dumping data for table `notifications`
 --
 
-LOCK TABLES `collaborators` WRITE;
-/*!40000 ALTER TABLE `collaborators` DISABLE KEYS */;
-/*!40000 ALTER TABLE `collaborators` ENABLE KEYS */;
+LOCK TABLES `notifications` WRITE;
+/*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +60,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-24 17:38:52
+-- Dump completed on 2023-10-26  7:35:31
