@@ -8,6 +8,10 @@
   <form method="POST"
     action="{{ url_for('project_template.edit', id=model.id) if model else url_for('project_template.create') }}">
     {{ form.hidden_tag() }}
+
+    {# Hidden ID Field (only populated if editing) #}
+    {{ form.id() }}
+
     <div class="form-group">
       <label for="category">Category</label>
       <input list="categories" name="category" id="category" class="form-control" value="{{ form.category.data }}">
@@ -22,10 +26,10 @@
     </div>
 
     <div class="form-group">
-      <label for="project_template_name">Template Name</label>
-      {{ form.project_template_name(class="form-control") }}
-      {% if form.project_template_name.errors %}
-      <span class="text-danger">{{ form.project_template_name.errors[0] }}</span>
+      <label for="title">Title</label>
+      {{ form.title(class="form-control") }}
+      {% if form.title.errors %}
+      <span class="text-danger">{{ form.title.errors[0] }}</span>
       {% endif %}
     </div>
 
@@ -50,6 +54,14 @@
       {{ form.length(class="form-control") }}
       {% if form.length.errors %}
       <span class="text-danger">{{ form.length.errors[0] }}</span>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="tags">Tags (Separated by semicolons)</label>
+      {{ form.tags(class="form-control", placeholder="For example: tag1;tag2;tag3", rows=3) }}
+      {% if form.tags.errors %}
+      <span class="text-danger">{{ form.tags.errors[0] }}</span>
       {% endif %}
     </div>
 

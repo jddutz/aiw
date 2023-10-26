@@ -1,45 +1,39 @@
 # app/models/project_template.py
 
 import json
-from datetime import datetime
-
 from app import db
-from app.models.relationships import (
-    project_template_tags_link,
-    project_template_genres_link,
+from .base_model import BaseModel
+from .genre import GenreModel
+
+
+project_template_genres = db.Table(
+    "project_template_genres",
+    db.Column("project_template_id", db.Integer, db.ForeignKey("project_templates.id")),
+    db.Column("genre_id", db.Integer, db.ForeignKey("genres.id")),
 )
 
 
-class ProjectTemplate(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class ProjectTemplateModel(BaseModel):
+    __tablename__ = "project_templates"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
     category = db.Column(db.String(255), nullable=False)
-    project_template_name = db.Column(
-        "name", db.String(255), unique=True, nullable=False
-    )
+    title = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.Text, nullable=False)
     methodology = db.Column(db.Text, nullable=False)
     length = db.Column(db.String(255), nullable=False)
-    tags = db.relationship(
-        "Tag",
-        secondary="project_template_tags",
-        back_populates="project_templates",
-    )
+    tags = db.Column(db.String(255), nullable=True)
     genres = db.relationship(
-        "Genre",
+        "GenreModel",
         secondary="project_template_genres",
-        back_populates="project_templates",
+        lazy="subquery",
+        backref=db.backref("project_templates", lazy=True),
     )
     links = db.Column(db.Text, nullable=False)
-
     structure = db.Column(db.Text, nullable=True)  # Stores serialized JSON structure
-
     imageref = db.Column(db.String(255))
     usage_count = db.Column(db.Integer, default=0)
-
-    created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
-    modified = db.Column(
-        db.TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
 
     def set_structure(self, structure_dict):
         self.structure = json.dumps(structure_dict)
@@ -52,3 +46,52 @@ class ProjectTemplate(db.Model):
 
     def get_links(self):
         return self.links.split(";") if self.links else []
+
+    def set_tags(self, tags_list):
+        self.tags = ";".join(tags_list)
+
+    def get_tags(self):
+        return self.tags.split(";") if self.tags else []
+
+    def caption(self):
+        return f"{self.project_template_name}"
+
+    def to_dict(self) -> dict:
+        instance_data = super().to_dict()
+        instance_data.update(
+            {
+                "category": self.category,
+                "project_template_name": self.project_template_name,
+                "description": self.description,
+                "methodology": self.methodology,
+                "length": self.length,
+                "tags": self.get_tags(),
+                "genres": [genre.to_dict() for genre in self.genres],
+                "links": self.get_links(),
+                "structure": self.get_structure(),
+                "imageref": self.imageref,
+                "usage_count": self.usage_count,
+            }
+        )
+        return instance_data
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "ProjectTemplateModel":
+        instance = super().from_dict(data)
+        instance.category = data.get("category", "")
+        instance.project_template_name = data.get("project_template_name", "")
+        instance.description = data.get("description", "")
+        instance.methodology = data.get("methodology", "")
+        instance.length = data.get("length", "")
+        instance.set_tags(data.get("tags", []))
+        instance.genres = [
+            GenreModel.from_dict(genre) for genre in data.get("genres", [])
+        ]
+        instance.set_links(data.get("links", []))
+        instance.set_structure(data.get("structure", {}))
+        instance.imageref = data.get("imageref", "")
+        instance.usage_count = data.get("usage_count", 0)
+        return instance
+
+    def __repr__(self) -> str:
+        return f"<ProjectTemplateModel id={self.id}, name={self.project_template_name}>"

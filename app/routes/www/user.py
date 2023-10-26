@@ -5,7 +5,6 @@ from flask_login import login_user, login_required, current_user
 from app.services import (
     user_manager,
     notification_manager,
-    activity_manager,
     project_manager,
 )
 from app.exceptions import (

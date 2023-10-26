@@ -3,7 +3,7 @@
 
 <div class="container mt-5">
   <div class="d-flex align-items-start">
-    <h2 class="mb-0">{{ model.project_template_name }}</h2>
+    <h2 class="mb-0">{{ model.title }}</h2>
     <a href="{{ url_for('project_template.edit', id=model.id) }}" class="btn btn-white">
       <i class="bi bi-pencil text-dark"></i>
     </a>
@@ -41,6 +41,7 @@
       creation.</small></p>
   <h5>Tags</h5>
   <ul>
+    {% if model.tags %}
     {% if model.tags is string %}
     {% for tag in model.tags.split(';') %}
     <li>{{ tag }}</li>
@@ -49,6 +50,7 @@
     {% for tag in model.tags %}
     <li>{{ tag.name }}</li> {# or whatever attribute holds the tag's name in your Tag model #}
     {% endfor %}
+    {% endif %}
     {% endif %}
   </ul>
 

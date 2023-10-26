@@ -1,7 +1,14 @@
 # app/forms/system_message_edit_form.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, BooleanField, SubmitField
+from wtforms import (
+    StringField,
+    TextAreaField,
+    SelectField,
+    BooleanField,
+    SubmitField,
+    HiddenField,
+)
 from wtforms.validators import DataRequired, Length, Optional
 
 SYSTEM_MESSAGE_TYPES = [
@@ -11,8 +18,7 @@ SYSTEM_MESSAGE_TYPES = [
 
 
 class SystemMessageEditForm(FlaskForm):
-    """Form for editing system messages."""
-
+    id = HiddenField()
     title = StringField("Title", validators=[DataRequired(), Length(max=255)])
     content = TextAreaField("Content", validators=[DataRequired()])
     type = SelectField("Type", choices=SYSTEM_MESSAGE_TYPES, validators=[Optional()])

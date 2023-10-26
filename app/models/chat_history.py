@@ -1,41 +1,39 @@
 # app/models/chat_history.py
 
 from app import db
-from .chat_message import ChatMessage
-from datetime import datetime
+from .base_model import BaseModel
+from .chat_message import ChatMessageModel  # Ensure you import the correct model name
 
 
-class ChatHistory(db.Model):
+class ChatHistoryModel(BaseModel):
+    __tablename__ = "chat_histories"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    # Association with WritingProject
-    writing_project_id = db.Column(
-        db.Integer, db.ForeignKey("writing_project.id"), nullable=True
-    )
+    messages = db.relationship("ChatMessageModel", backref="chat_history", lazy=True)
 
-    # Messages related to this chat history
-    messages = db.relationship("ChatMessage", backref="chat_history", lazy=True)
-
-    # Timestamps
-    created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    last_modified = db.Column(
-        db.DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
-
-    def add_message(self, message: ChatMessage):
+    def add_message(self, message: ChatMessageModel):
         message.chat_history_id = self.id
         self.messages.append(message)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "messages": [message.to_dict() for message in self.messages],
-        }
+    def caption(self):
+        return f"Chat History {self.id}"
+
+    def to_dict(self) -> dict:
+        instance_data = super().to_dict()
+        instance_data["messages"] = [message.to_dict() for message in self.messages]
+        return instance_data
 
     @classmethod
-    def from_dict(cls, data):
-        history = cls()
-        history.messages = [
-            ChatMessage.from_dict(msg_data) for msg_data in data["messages"]
+    def from_dict(cls, data: dict) -> "ChatHistoryModel":
+        instance = super(ChatHistoryModel, cls).from_dict(data)
+
+        instance.messages = [
+            ChatMessageModel.from_dict(msg_data)
+            for msg_data in data.get("messages", [])
         ]
-        return history
+
+        return instance
+
+    def __repr__(self) -> str:
+        return f"<ChatHistoryModel id={self.id}, messages_count={len(self.messages)}>"

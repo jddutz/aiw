@@ -5,10 +5,10 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 from sqlalchemy import or_
 
 from app import db
-from app.models import ProjectTemplate
+from app.models import ProjectTemplateModel
 from app.forms.project_template_edit_form import ProjectTemplateEditForm
 
-MODEL = ProjectTemplate
+MODEL = ProjectTemplateModel
 MODEL_DESC = "Project Template"
 EDIT_FORM = ProjectTemplateEditForm
 
@@ -29,9 +29,9 @@ def load_categories():
             return CACHED_CATEGORIES
 
     categories = (
-        db.session.query(ProjectTemplate.category)
+        db.session.query(ProjectTemplateModel.category)
         .distinct()
-        .order_by(ProjectTemplate.category.asc())
+        .order_by(ProjectTemplateModel.category.asc())
         .all()
     )
 

@@ -5,10 +5,10 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 from sqlalchemy import or_
 
 from app import db
-from app.models import ChatSystemMessage, HelpContext
+from app.models import ChatSystemMessageModel, HelpContextModel
 from app.forms.system_message_edit_form import SystemMessageEditForm
 
-MODEL = ChatSystemMessage
+MODEL = ChatSystemMessageModel
 MODEL_DESC = "System Message"
 EDIT_FORM = SystemMessageEditForm
 
@@ -29,9 +29,9 @@ def load_modules():
             return CACHED_MODULES
 
     modules = (
-        db.session.query(HelpContext.id, HelpContext.title)
+        db.session.query(HelpContextModel.id, HelpContextModel.title)
         .distinct()
-        .order_by(HelpContext.id.asc())
+        .order_by(HelpContextModel.id.asc())
         .all()
     )
 

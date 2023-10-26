@@ -1,12 +1,12 @@
 # app/forms/writing_project_edit_form.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, SelectField
+from wtforms import StringField, TextAreaField, SubmitField, SelectField, HiddenField
 from wtforms.validators import DataRequired, Length, Optional
-from app.models import ProjectTemplate
 
 
 class WritingProjectEditForm(FlaskForm):
+    id = HiddenField()
     title = StringField("Title", validators=[DataRequired(), Length(min=2, max=120)])
     description = TextAreaField("Description", validators=[Optional(), Length(max=500)])
 
@@ -20,15 +20,12 @@ class WritingProjectEditForm(FlaskForm):
         "Project Type", validators=[DataRequired(), Length(min=1, max=120)]
     )
 
-    # Dropdown for genre. Coercion to integer is used to save the ID of the genre in the model.
-    genre = SelectField(
-        "Genre",
-        coerce=int,  # This will convert the selected option to integer.
+    genre_id = SelectField(
+        "GenreModel",
+        coerce=int,
         validators=[DataRequired()],
     )
 
-    tags = StringField(
-        "Tags", validators=[Optional(), Length(max=500)]
-    )  # This can be further improved with better tag handling.
+    tags = StringField("Tags", validators=[Optional(), Length(max=500)])
 
     submit = SubmitField("Save")

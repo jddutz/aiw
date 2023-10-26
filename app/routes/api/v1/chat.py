@@ -5,7 +5,12 @@ from flask import request, Blueprint, jsonify
 
 import openai
 from app import cache, db
-from app.models import ChatSystemMessage, HelpContext, ChatHistory, ChatMessage
+from app.models import (
+    ChatSystemMessageModel,
+    HelpContextModel,
+    ChatHistoryModel,
+    ChatMessageModel,
+)
 
 chat_api_v1 = Blueprint("chat_api_v1", __name__)
 
@@ -17,7 +22,7 @@ SYSTEM_GREETING_MESSAGE_TITLE = "System Greeting Message"
 
 def init_message_queue():
     # Fetch the cached instructional message or retrieve from DB if not cached
-    initialization_message = ChatSystemMessage.query.filter_by(
+    initialization_message = ChatSystemMessageModel.query.filter_by(
         title=INITIALIZATION_MESSAGE_TITLE
     ).first()
 
@@ -28,12 +33,14 @@ def init_message_queue():
         help_context_id = request.json.get("help_context_id")
 
     if help_context_id:
-        help_context_message = ChatSystemMessage.query.filter_by(
+        help_context_message = ChatSystemMessageModel.query.filter_by(
             title=HELP_CONTEXT_MESSAGE_TITLE
         ).first()
 
     if help_context_message:
-        help_context = HelpContext.query.filter_by(context_id=help_context_id).first()
+        help_context = HelpContextModel.query.filter_by(
+            context_id=help_context_id
+        ).first()
 
     if help_context:
         messages.append(
@@ -45,7 +52,7 @@ def init_message_queue():
 
     if request.is_json and "page_content" in request.json:
         # Retrieve context from the request body
-        page_content_message = ChatSystemMessage.query.filter_by(
+        page_content_message = ChatSystemMessageModel.query.filter_by(
             title=PAGE_CONTENT_MESSAGE_TITLE
         ).first()
 
@@ -78,7 +85,9 @@ def send_messages(messages, openai_model="gpt-3.5-turbo"):
     ai_message = openai_response.choices[0].message["content"].strip()
 
     # Create and add the AI's response to the chat history
-    ai_msg_instance = ChatMessage(role=ChatMessage.ASSISTANT, content=ai_message)
+    ai_msg_instance = ChatMessageModel(
+        role=ChatMessageModel.ASSISTANT, content=ai_message
+    )
     db.session.add(ai_msg_instance)
 
     return ai_msg_instance
@@ -86,12 +95,12 @@ def send_messages(messages, openai_model="gpt-3.5-turbo"):
 
 @chat_api_v1.route("/new", methods=["POST"])
 def new_conversation():
-    chat_history = ChatHistory()
+    chat_history = ChatHistoryModel()
     db.session.add(chat_history)
 
     messages = init_message_queue()
 
-    greeting = ChatSystemMessage.query.filter_by(
+    greeting = ChatSystemMessageModel.query.filter_by(
         title=SYSTEM_GREETING_MESSAGE_TITLE
     ).first()
 
@@ -136,7 +145,7 @@ def send_instructions():
 
     messages = init_message_queue()
 
-    system_message = ChatSystemMessage.query.filter_by(
+    system_message = ChatSystemMessageModel.query.filter_by(
         title=system_message_title
     ).first()
 
@@ -161,7 +170,7 @@ def send_instructions():
 
     ai_msg_instance = send_messages(messages, openai_model="gpt-4")
 
-    chat_history = ChatHistory()
+    chat_history = ChatHistoryModel()
     db.session.add(chat_history)
 
     chat_history.add_message(ai_msg_instance)
@@ -182,7 +191,7 @@ def send_instructions():
 
 @chat_api_v1.route("/<int:conversation_id>", methods=["GET"])
 def get_conversation(conversation_id):
-    chat_history = ChatHistory.query.get(conversation_id)
+    chat_history = ChatHistoryModel.query.get(conversation_id)
     if chat_history is None:
         return jsonify({"error": "Conversation not found"}), 404
     return jsonify(chat_history.to_dict())
@@ -201,23 +210,25 @@ def send_message(conversation_id=None):
 
     chat_history = None
     if conversation_id:
-        chat_history = ChatHistory.query.get(conversation_id)
+        chat_history = ChatHistoryModel.query.get(conversation_id)
         if chat_history is None:
             return jsonify({"error": "Conversation not found"}), 404
 
     messages = init_message_queue()
 
-    # If no conversation_id is provided, create a new ChatHistory
+    # If no conversation_id is provided, create a new ChatHistoryModel
     if chat_history:
         # Extract the last 20 messages and append to messages list
         for msg in chat_history.messages[-20:]:
             messages.append({"role": msg.role, "content": msg.content})
     else:
-        chat_history = ChatHistory()
+        chat_history = ChatHistoryModel()
         db.session.add(chat_history)
 
     # Create and add the user's message to the chat history
-    user_msg_instance = ChatMessage(role=ChatMessage.USER, content=user_message)
+    user_msg_instance = ChatMessageModel(
+        role=ChatMessageModel.USER, content=user_message
+    )
     db.session.add(user_msg_instance)
 
     chat_history.add_message(user_msg_instance)
@@ -239,7 +250,9 @@ def send_message(conversation_id=None):
     ai_message = response.choices[0].message["content"].strip()
 
     # Create and add the AI's response to the chat history
-    ai_msg_instance = ChatMessage(role=ChatMessage.ASSISTANT, content=ai_message)
+    ai_msg_instance = ChatMessageModel(
+        role=ChatMessageModel.ASSISTANT, content=ai_message
+    )
     db.session.add(ai_msg_instance)
 
     chat_history.add_message(ai_msg_instance)

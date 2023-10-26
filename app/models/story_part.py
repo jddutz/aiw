@@ -1,53 +1,80 @@
 # app/models/story_part.py
 
+from enum import Enum
+
 from app import db
-from app.models.relationships import storypart_collection_link
+from .base_model import BaseModel
 
 
-class StoryPart(db.Model):
+class StoryPartType(Enum):
+    TEXT = "text"
+    COLLECTION = "collection"
+    IMAGE = "image"
+    IMAGEREF = "imageref"
+
+
+class StoryPartModel(BaseModel):
+    __tablename__ = "story_parts"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    # Foreign key linking back to WritingProject
+    # Foreign key linking back to WritingProjectModel
     writing_project_id = db.Column(
-        db.Integer, db.ForeignKey("writing_project.id"), nullable=False
+        db.Integer, db.ForeignKey("writing_projects.id"), nullable=False
     )
 
-    # Self-referential relationship for nested story parts
-    parent_id = db.Column(db.Integer, db.ForeignKey("story_part.id"), nullable=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey("story_parts.id"), nullable=True)
     children = db.relationship(
-        "StoryPart", backref=db.backref("parent", remote_side=[id]), lazy="dynamic"
+        "StoryPartModel",
+        back_populates="parent",
+        lazy="dynamic",
+    )
+    parent = db.relationship(
+        "StoryPartModel",
+        back_populates="children",
+        remote_side=[id],
     )
 
-    # Attributes for the StoryPart
+    # Attributes for the StoryPartModel
+    part_type = db.Column(
+        db.Enum(StoryPartType), default=StoryPartType.TEXT, nullable=False
+    )
     title = db.Column(db.String(120), nullable=False)
-    content = db.Column(db.Text, nullable=True)  # the content of the story part
-    imageref = db.Column(db.String(255), nullable=True)  # image reference
+    summary = db.Column(db.Text, nullable=True)
+    content = db.Column(db.Text, nullable=True)
 
-    # Relationship with Collections (assuming a story part can belong to multiple collections)
-    collections = db.relationship(
-        "StoryPartCollection",
-        secondary="storypart_collection_link",
-        back_populates="story_parts",
-    )
+    def caption(self):
+        return f"{self.title}"
 
-    created = db.Column(db.DateTime, index=True, default=db.func.now())
-    last_modified = db.Column(
-        db.DateTime, index=True, default=db.func.now(), onupdate=db.func.now()
-    )
+    def to_dict(self) -> dict:
+        instance_data = super().to_dict()
+        instance_data.update(
+            {
+                "writing_project_id": self.writing_project_id,
+                "parent_id": self.parent_id,
+                "children": [child.to_dict() for child in self.children],
+                "part_type": self.part_type.value,
+                "title": self.title,
+                "summary": self.summary,
+                "content": self.content,
+            }
+        )
+        return instance_data
 
-    def __str__(self):
-        return f"StoryPart({self.id}, {self.title})"
+    @classmethod
+    def from_dict(cls, data: dict) -> "StoryPartModel":
+        instance = super().from_dict(data)
 
-    def __repr__(self):
-        return f"<StoryPart {self.title}>"
+        instance.writing_project_id = data.get("writing_project_id", None)
+        instance.parent_id = data.get("parent_id", None)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "content": self.content,
-            "writing_project_id": self.writing_project_id,
-            "parent_id": self.parent_id,
-            "created": self.created,
-            "last_modified": self.last_modified,
-        }
+        try:
+            instance.part_type = StoryPartType(data.get("part_type"))
+        except ValueError:
+            instance.part_type = None
+
+        instance.title = data.get("title", "")
+        instance.summary = data.get("summary", None)
+        instance.content = data.get("content", None)
+
+        return instance

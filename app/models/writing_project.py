@@ -1,61 +1,86 @@
 # app/models/writing_project.py
 
 from app import db
-from datetime import datetime
-from .relationships import collaborators_link, reviewers_link
+from .base_model import BaseModel
 
 
-class WritingProject(db.Model):
+collaborators_link = None
+
+reviewers_link = None
+
+collaborators_link = db.Table(
+    "collaborators_link",
+    db.Column(
+        "writing_project_id",
+        db.Integer,
+        db.ForeignKey("writing_projects.id"),
+        primary_key=True,
+    ),
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
+)
+
+reviewers_link = db.Table(
+    "reviewers_link",
+    db.Column(
+        "writing_project_id",
+        db.Integer,
+        db.ForeignKey("writing_projects.id"),
+        primary_key=True,
+    ),
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
+)
+
+
+class WritingProjectModel(BaseModel):
+    __tablename__ = "writing_projects"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     title = db.Column(db.String(120), index=True, nullable=False)
     description = db.Column(db.String(500), nullable=True)
     collaborators = db.relationship(
-        "User",
+        "UserModel",
         secondary=collaborators_link,
         lazy="subquery",
         backref=db.backref("writing_projects", lazy=True),
     )
     reviewers = db.relationship(
-        "User",
+        "UserModel",
         secondary=reviewers_link,
         lazy="subquery",
         backref=db.backref("reviewing_projects", lazy=True),
     )
     visibility = db.Column(db.String(120), nullable=False)
     project_template_id = db.Column(
-        db.Integer, db.ForeignKey("project_template.id"), nullable=True
+        db.Integer, db.ForeignKey("project_templates.id"), nullable=True
     )
     project_type = db.Column(db.String(120), nullable=False)
-    tags = db.relationship(
-        "Tag",
-        secondary="writing_project_tags",
-        back_populates="writing_projects",
-    )
-    genre_id = db.Column(db.Integer, db.ForeignKey("genre.id"), nullable=True)
-    genre = db.relationship("Genre", backref=db.backref("writing_projects", lazy=True))
-
-    # Relationship for StoryParts (no need to mention foreign key here as it's already handled in StoryPart model)
-    stories = db.relationship("StoryPart", backref="writing_project", lazy=True)
-
-    # Relationship for Collections
-    collections = db.relationship(
-        "StoryPartCollection", backref="writing_project", lazy=True
+    tags = db.Column(db.String(255), nullable=False)
+    genre_id = db.Column(db.Integer, db.ForeignKey("genres.id"), nullable=True)
+    genre = db.relationship(
+        "GenreModel", backref=db.backref("writing_projects", lazy=True)
     )
 
-    created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    last_modified = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # Relationship for StoryParts
+    stories = db.relationship("StoryPartModel", backref="writing_project", lazy=True)
+
+    def caption(self):
+        return f"{self.title}"
 
     def __str__(self):
-        return f"WritingProject({self.id}, {self.title})"
+        return f"WritingProjectModel({self.id}, {self.title})"
 
     def __repr__(self):
-        return f"<WritingProject {self.title}>"
+        return f"<WritingProjectModel {self.title}>"
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "timestamp": self.created,  # Updating timestamp to 'created' as it seems more accurate.
-        }
+    def to_dict(self) -> dict:
+        instance_data = super().to_dict()
+        instance_data.update(
+            {
+                "title": self.title,
+                "description": self.description,
+                # Removed 'timestamp' since 'created' is already in the base model's to_dict
+            }
+        )
+        return instance_data

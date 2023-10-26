@@ -1,13 +1,15 @@
 # app/models/user.py
 
-from flask_login import UserMixin
 from app import db
+from flask_login import UserMixin
 from sqlalchemy import event
 from datetime import datetime
 import bcrypt
 
 
-class User(db.Model, UserMixin):
+class UserModel(db.Model, UserMixin):
+    __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50), nullable=True, unique=True, index=True)
     username_normalized = db.Column(db.String(50), index=True)
@@ -31,14 +33,14 @@ class User(db.Model, UserMixin):
 
 
 # This will automatically set the normalized fields before inserting a new record.
-@event.listens_for(User, "before_insert")
+@event.listens_for(UserModel, "before_insert")
 def set_normalized_fields_before_insert(mapper, connection, user):
     user.username_normalized = user.username.lower() if user.username else None
     user.email_normalized = user.email.lower() if user.email else None
 
 
 # This will automatically set the normalized fields before updating an existing record.
-@event.listens_for(User, "before_update")
+@event.listens_for(UserModel, "before_update")
 def set_normalized_fields_before_update(mapper, connection, user):
     user.username_normalized = user.username.lower() if user.username else None
     user.email_normalized = user.email.lower() if user.email else None

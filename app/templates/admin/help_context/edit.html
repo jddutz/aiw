@@ -10,6 +10,9 @@
     method="post">
     {{ form.hidden_tag() }}
 
+    {# Hidden ID Field (only populated if editing) #}
+    {{ form.id() }}
+
     <div class="form-group">
       {{ form.context_id.label }}
       {{ form.context_id(class="form-control") }}

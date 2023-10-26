@@ -7,8 +7,8 @@ load_dotenv(os.path.join(project_folder, ".env"))
 
 import json
 from app import flask_app, db
-from app.models.project_template import ProjectTemplate
-from app.models.genre import Genre
+from app.models.project_template import ProjectTemplateModel
+from app.models.genre import GenreModel
 from app.models.tag import Tag
 from datetime import datetime
 
@@ -22,7 +22,7 @@ def load_template_data():
     # Loop through each template in the file
     for template_data in templates:
         print(template_data["name"])
-        existing = ProjectTemplate.query.filter_by(
+        existing = ProjectTemplateModel.query.filter_by(
             project_template_name=template_data["name"]
         ).first()
         if not existing:
@@ -36,18 +36,18 @@ def load_template_data():
                     db.session.commit()
                 tags.append(tag)
 
-            # Genres: Create if not exists and get Genre objects
+            # Genres: Create if not exists and get GenreModel objects
             genres = []
             for genre_name in template_data["genres"]:
-                genre = Genre.query.filter_by(name=genre_name).first()
+                genre = GenreModel.query.filter_by(name=genre_name).first()
                 if not genre:
-                    genre = Genre(name=genre_name, description=genre_name)
+                    genre = GenreModel(name=genre_name, description=genre_name)
                     db.session.add(genre)
                     db.session.commit()
                 genres.append(genre)
 
             # Create the template object
-            new_template = ProjectTemplate(
+            new_template = ProjectTemplateModel(
                 category=template_data["category"],
                 project_template_name=template_data["name"],
                 description=template_data["description"],

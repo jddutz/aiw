@@ -1,20 +1,20 @@
 # app/services/notification_manager.py
 
 from app import db
-from app.models import Notification
+from app.models import NotificationModel
 
 
 def create_notification(notification_info):
     """
-    Create a new Notification based on the provided notification_info.
+    Create a new NotificationModel based on the provided notification_info.
 
     Args:
     - notification_info (dict): Dictionary containing the new notification's details.
 
     Returns:
-    - (Notification): The newly created Notification instance.
+    - (NotificationModel): The newly created NotificationModel instance.
     """
-    new_notification = Notification(**notification_info)
+    new_notification = NotificationModel(**notification_info)
     db.session.add(new_notification)
     db.session.commit()
     return new_notification
@@ -22,15 +22,15 @@ def create_notification(notification_info):
 
 def get_notification_by_id(notification_id):
     """
-    Fetch a Notification based on its ID.
+    Fetch a NotificationModel based on its ID.
 
     Args:
     - notification_id (int): ID of the notification to fetch.
 
     Returns:
-    - (Notification): The requested Notification instance or None if not found.
+    - (NotificationModel): The requested NotificationModel instance or None if not found.
     """
-    return Notification.query.get(notification_id)
+    return NotificationModel.query.get(notification_id)
 
 
 def get_notifications_for_user(user_id, status="unread", limit=10):
@@ -42,10 +42,10 @@ def get_notifications_for_user(user_id, status="unread", limit=10):
     - status (str): The status of the notifications to fetch.
 
     Returns:
-    - List[Notification]: A list of all Notification instances matching the criteria.
+    - List[NotificationModel]: A list of all NotificationModel instances matching the criteria.
     """
-    query = Notification.query.filter_by(user_id=user_id, status=status).order_by(
-        Notification.created.desc()
+    query = NotificationModel.query.filter_by(user_id=user_id, status=status).order_by(
+        NotificationModel.created.desc()
     )
     if limit:
         query = query.limit(limit)
@@ -54,7 +54,7 @@ def get_notifications_for_user(user_id, status="unread", limit=10):
 
 def mark_notification_as_read(notification_id):
     """
-    Mark a Notification as read.
+    Mark a NotificationModel as read.
 
     Args:
     - notification_id (int): ID of the notification to mark as read.
@@ -73,7 +73,7 @@ def mark_notification_as_read(notification_id):
 
 def delete_notification(notification_id):
     """
-    Delete a Notification based on its ID.
+    Delete a NotificationModel based on its ID.
 
     Args:
     - notification_id (int): ID of the notification to delete.

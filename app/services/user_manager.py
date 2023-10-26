@@ -13,7 +13,7 @@ from app.exceptions import (
     EmailExistsError,
     AuthenticationError,
 )
-from app.models.user import User
+from app.models.user import UserModel
 from app import login_manager, db
 
 
@@ -62,12 +62,12 @@ def validate_password(password):
 
 def username_exists(username):
     normalized = username.lower()
-    return User.query.filter_by(username=normalized).first() is not None
+    return UserModel.query.filter_by(username=normalized).first() is not None
 
 
 def email_exists(email):
     normalized = email.lower()
-    return User.query.filter_by(email=normalized).first() is not None
+    return UserModel.query.filter_by(email=normalized).first() is not None
 
 
 def create_user(username_or_email, password):
@@ -87,7 +87,7 @@ def create_user(username_or_email, password):
     if not validate_password(password):
         raise InvalidPasswordError()
 
-    user = User(username=username, email=email)
+    user = UserModel(username=username, email=email)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -99,23 +99,23 @@ def create_user(username_or_email, password):
 
 @login_manager.user_loader
 def load_user(user_id):
-    # User.id is an int
+    # UserModel.id is an int
     # Flask-Login uses a string
     # converting to int before querying the database
     # will throw an exception if user_id is not valid
-    return User.query.get(int(user_id))
+    return UserModel.query.get(int(user_id))
 
 
 def get_user_by_username(username):
     if not validate_username(username):
         return None
-    return User.query.filter_by(username=username.lower()).first()
+    return UserModel.query.filter_by(username=username.lower()).first()
 
 
 def get_user_by_email(email):
     if not validate_email(email):
         return None
-    return User.query.filter_by(email=email.lower()).first()
+    return UserModel.query.filter_by(email=email.lower()).first()
 
 
 def authenticate_user(username_or_email, password):

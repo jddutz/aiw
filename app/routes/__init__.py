@@ -6,21 +6,22 @@ from app import flask_app
 
 from app.services import (
     notification_manager,
-    activity_manager,
     project_manager,
 )
 
 # Admin area blueprints
-from app.routes.admin.project_template import blueprint as project_template_blueprint
 from app.routes.admin.help_context import blueprint as help_context_blueprint
 from app.routes.admin.system_message import blueprint as system_message_blueprint
+from app.routes.admin.genre import blueprint as genre_blueprint
+from app.routes.admin.project_template import blueprint as project_template_blueprint
 
-flask_app.register_blueprint(
-    project_template_blueprint, url_prefix="/admin/project_template"
-)
 flask_app.register_blueprint(help_context_blueprint, url_prefix="/admin/help_context")
 flask_app.register_blueprint(
     system_message_blueprint, url_prefix="/admin/system_message"
+)
+flask_app.register_blueprint(genre_blueprint, url_prefix="/admin/genre")
+flask_app.register_blueprint(
+    project_template_blueprint, url_prefix="/admin/project_template"
 )
 
 
@@ -62,18 +63,12 @@ def home():
     # Gather notifications using the service
     notifications = notification_manager.get_notifications_for_user(user_id, limit=10)
 
-    # Gather recent activities using the service
-    recent_activities = activity_manager.get_recent_activities_for_user(
-        user_id, limit=10
-    )
-
     # Gather projects using the service
     projects = project_manager.get_recent_projects_for_user(user_id, limit=10)
 
     return render_template(
         "dashboard.html",
         notifications=notifications,
-        recent_activities=recent_activities,
         projects=projects,
     )
 

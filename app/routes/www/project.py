@@ -2,14 +2,15 @@
 
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, flash
+from flask_login import current_user
 from sqlalchemy import or_
 
 from app import db
-from app.models import WritingProject, Genre, ProjectTemplate
+from app.models import WritingProjectModel, ProjectTemplateModel, GenreModel
 from app.forms.writing_project_create_form import WritingProjectCreateForm
 from app.forms.writing_project_edit_form import WritingProjectEditForm
 
-MODEL = WritingProject
+MODEL = WritingProjectModel
 MODEL_DESC = "Writing Project"
 CREATE_FORM = WritingProjectCreateForm
 EDIT_FORM = WritingProjectEditForm
@@ -50,20 +51,36 @@ def list():
 @blueprint.route("/create", methods=["GET", "POST"])
 def create():
     form = CREATE_FORM()
-    form.genre.choices = [(genre.id, genre.name) for genre in Genre.query.all()]
+    form.genre_id.choices = [(genre.id, genre.name) for genre in GenreModel.query.all()]
     form.project_template.choices = [
         (template.id, template.project_template_name)
-        for template in ProjectTemplate.query.all()
+        for template in ProjectTemplateModel.query.all()
     ]
 
     if form.validate_on_submit():
         model = MODEL()
+
+        project_template_id = form.project_template.data
+        if project_template_id:
+            project_template = ProjectTemplateModel.query.get(project_template_id)
+            model.project_type = project_template.project_template_name
+            # TODO: unpack project_template.structure
+
+        tags_str = [tag.strip() for tag in form.tags.data.split(",")]
+        tags_obj = [Tag(name=tag_name) for tag_name in tags_str if tag_name != ""]
+        model.tags = tags_obj
+
+        model.owner_id = current_user.id
+
+        # remove the tags field, if we leave it in, populate_obj will throw a TypeError
+        del form.tags
         form.populate_obj(obj=model)
+
         db.session.add(model)
         db.session.commit()
 
         flash(
-            f"{MODEL_DESC}, {model.project_template_name}, created successfully!",
+            f"{MODEL_DESC}, {model.title}, created successfully!",
             "success",
         )
         return redirect(url_for(f"{ROUTE_NAME}.list"))

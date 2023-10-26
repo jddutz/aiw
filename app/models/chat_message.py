@@ -1,62 +1,72 @@
 # app/models/chat_message.py
 
 from app import db
-from datetime import datetime
-from sqlalchemy import Enum
+from .base_model import BaseModel
+from enum import Enum
 
 
-class ChatMessage(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
+class RoleEnum(Enum):
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
-    ROLES = (USER, ASSISTANT, SYSTEM)
 
-    role = db.Column(Enum(*ROLES, name="role_types"), nullable=True)
 
-    USER = "user"
-    ASSISTANT = "assistant"
-    SYSTEM = "system"
-    ROLES = (USER, ASSISTANT, SYSTEM)
-
-    role = db.Column(Enum(*ROLES, name="role_types"), nullable=True)
-
-    content = db.Column(db.Text, nullable=True)
-
-    # Timestamp for the message
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # Foreign keys
-    chat_history_id = db.Column(
-        db.Integer, db.ForeignKey("chat_history.id"), nullable=False
-    )
-    user_id = db.Column(
-        db.Integer, db.ForeignKey("user.id"), nullable=True
-    )  # Associate with the sender
-
+class VisibilityEnum(Enum):
     VISIBLE_TO_ALL = "all"
     VISIBLE_TO_COLLABORATORS = "collaborators"
-    VISIBILITY_CHOICES = (VISIBLE_TO_ALL, VISIBLE_TO_COLLABORATORS)
 
+
+class ChatMessageModel(BaseModel):
+    __tablename__ = "chat_messages"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    role = db.Column(db.Enum(RoleEnum), nullable=True)
+    content = db.Column(db.Text, nullable=True)
+    chat_history_id = db.Column(
+        db.Integer, db.ForeignKey("chat_histories.id"), nullable=False
+    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     visibility = db.Column(
-        Enum(*VISIBILITY_CHOICES, name="visibility_types"), default=VISIBLE_TO_ALL
+        db.Enum(VisibilityEnum),
+        default=VisibilityEnum.VISIBLE_TO_ALL,
     )
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "role": self.role,
-            "content": self.content,
-            "created_at": self.created_at.isoformat() if self.created_at else "",
-            "visibility": self.visibility,
-        }
+    def caption(self):
+        return f"Chat Message {self.id}"
+
+    def to_dict(self) -> dict:
+        instance_data = super().to_dict()
+        instance_data.update(
+            {
+                "role": self.role.value if self.role else None,
+                "content": self.content,
+                "chat_history_id": self.chat_history_id,
+                "user_id": self.user_id,
+                "visibility": self.visibility.value if self.visibility else None,
+            }
+        )
+        return instance_data
 
     @classmethod
-    def from_dict(cls, data):
-        chat_message = cls()
-        chat_message.role = data.get("role")
-        chat_message.content = data.get("content")
-        chat_message.created_at = datetime.fromisoformat(data["created_at"])
-        chat_message.visibility = data.get("visibility", cls.VISIBLE_TO_ALL)
-        return chat_message
+    def from_dict(cls, data: dict) -> "ChatMessageModel":
+        instance = super().from_dict(data)
+
+        try:
+            instance.role = RoleEnum(data.get("role"))
+        except ValueError:
+            instance.role = None
+
+        instance.content = data.get("content", "")
+        instance.chat_history_id = data.get("chat_history_id")
+        instance.user_id = data.get("user_id")
+
+        try:
+            instance.visibility = VisibilityEnum(data.get("visibility"))
+        except ValueError:
+            instance.visibility = None
+
+        return instance
+
+    def __repr__(self) -> str:
+        return f"<ChatMessageModel id={self.id}, content='{self.content[:20]}'>"

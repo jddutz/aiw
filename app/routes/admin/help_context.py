@@ -5,10 +5,10 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 from sqlalchemy import or_
 
 from app import db
-from app.models import HelpContext
+from app.models import HelpContextModel
 from app.forms.help_context_edit_form import HelpContextEditForm
 
-MODEL = HelpContext
+MODEL = HelpContextModel
 MODEL_DESC = "Help Context"
 EDIT_FORM = HelpContextEditForm
 
@@ -29,9 +29,9 @@ def load_modules():
             return CACHED_MODULES
 
     modules = (
-        db.session.query(HelpContext.id, HelpContext.title)
+        db.session.query(HelpContextModel.id, HelpContextModel.title)
         .distinct()
-        .order_by(HelpContext.id.asc())
+        .order_by(HelpContextModel.id.asc())
         .all()
     )
 
