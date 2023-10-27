@@ -37,10 +37,10 @@
   <p>{{ model.updated_by or 'N/A' }}</p>
 
   <h5>Created At</h5>
-  <p>{{ model.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+  <p>{{ model.created.strftime('%Y-%m-%d %H:%M:%S') }}</p>
 
   <h5>Updated At</h5>
-  <p>{{ model.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+  <p>{{ model.modified.strftime('%Y-%m-%d %H:%M:%S') }}</p>
 
   <div class="mt-4">
     <button class="btn btn-secondary"

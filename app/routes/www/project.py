@@ -10,6 +10,7 @@ from app.models import WritingProjectModel, ProjectTemplateModel, GenreModel
 from app.forms.writing_project_create_form import WritingProjectCreateForm
 from app.forms.writing_project_edit_form import WritingProjectEditForm
 from app.forms.ai_dialog_form import AIDialogForm
+from app.services import ai_interface as ai
 
 MODEL = WritingProjectModel
 MODEL_DESC = "Writing Project"
@@ -52,10 +53,20 @@ async def list():
 @blueprint.route("/new", methods=["GET", "POST"])
 async def new():
     ai_dialog = AIDialogForm()
+
     form = CREATE_FORM()
+    form.genre_id.choices = [(genre.id, genre.name) for genre in GenreModel.query.all()]
+    form.project_template.choices = [
+        (template.id, template.title) for template in ProjectTemplateModel.query.all()
+    ]
 
     if ai_dialog.validate_on_submit():
-        form.description.data = ai_dialog.input_field.data
+        project_description = ai_dialog.input_field.data
+        form.title.data = ai.get_project_title(project_description)
+        form.description.data = ai.get_project_summary(project_description)
+        form.project_template = ai.get_project_template(project_description)
+        form.genre_id = ai.get_project_genre(project_description)
+        form.tags = ai.get_project_tags(project_description)
 
     return render_template(
         f"{TEMPLATE_PATH}/create.html",

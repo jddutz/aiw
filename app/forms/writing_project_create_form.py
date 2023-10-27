@@ -17,12 +17,6 @@ class WritingProjectCreateForm(FlaskForm):
         validators=[Optional()],
     )
 
-    visibility = SelectField(
-        "Visibility",
-        choices=[("public", "Public"), ("private", "Private")],
-        validators=[DataRequired()],
-    )
-
     genre_id = SelectField(
         "GenreModel",
         coerce=int,
@@ -30,5 +24,11 @@ class WritingProjectCreateForm(FlaskForm):
     )
 
     tags = StringField("Tags", validators=[Optional(), Length(max=500)])
+
+    visibility = SelectField(
+        "Visibility",
+        choices=[("public", "Public"), ("private", "Private")],
+        validators=[DataRequired()],
+    )
 
     submit = SubmitField("Save")
