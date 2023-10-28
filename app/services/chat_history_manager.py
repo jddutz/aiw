@@ -4,7 +4,7 @@ from app import db
 from app.models import ChatHistoryModel, ChatMessageModel
 
 
-async def create_history():
+def create_history():
     """
     Create a new ChatHistoryModel instance and save it to the database.
 
@@ -12,12 +12,12 @@ async def create_history():
     - (ChatHistoryModel): The newly created ChatHistoryModel instance.
     """
     history = ChatHistoryModel()
-    await db.async_session.add(history)
-    await db.async_session.commit()
+    db.session.add(history)
+    db.session.commit()
     return history
 
 
-async def add_message_to_history(history_id, message_data):
+def add_message_to_history(history_id, message_data):
     """
     Add a new message to a specified ChatHistoryModel.
 
@@ -32,12 +32,12 @@ async def add_message_to_history(history_id, message_data):
     if history:
         message = ChatMessageModel.from_dict(message_data)
         history.add_message(message)
-        await db.async_session.commit()
+        db.session.commit()
         return message
     return None
 
 
-async def get_history_by_id(history_id):
+def get_history_by_id(history_id):
     """
     Retrieve a ChatHistoryModel by its ID.
 
@@ -50,7 +50,7 @@ async def get_history_by_id(history_id):
     return ChatHistoryModel.query.get(history_id)
 
 
-async def get_all_messages_from_history(history_id):
+def get_all_messages_from_history(history_id):
     """
     Retrieve all messages from a specified ChatHistoryModel.
 
@@ -66,7 +66,7 @@ async def get_all_messages_from_history(history_id):
     return []
 
 
-async def delete_history(history_id):
+def delete_history(history_id):
     """
     Delete a ChatHistoryModel by its ID.
 
@@ -78,7 +78,7 @@ async def delete_history(history_id):
     """
     history = ChatHistoryModel.query.get(history_id)
     if history:
-        await db.async_session.delete(history)
-        await db.async_session.commit()
+        db.session.delete(history)
+        db.session.commit()
         return True
     return False

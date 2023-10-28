@@ -1,18 +1,34 @@
 # app/services/ai_interface.py
 
 import openai
+from sqlalchemy import text
 from app import cache, db
 from app.models import (
     ChatSystemMessageModel,
     HelpContextModel,
     ChatHistoryModel,
     ChatMessageModel,
+    ProjectTemplateModel,
+    GenreModel,
 )
 
 SYSTEM_GREETING_MESSAGE = "System Greeting Message"
 
 
-async def get_system_message(title):
+def execute_sql(sql, **kwargs):
+    connection = db.engine.connect()
+    try:
+        result = connection.execute(sql, kwargs).fetchone()
+
+        if result:
+            return result[0]
+        else:
+            return None
+    finally:
+        connection.close()
+
+
+def get_system_message(title):
     message = ChatSystemMessageModel.query.filter_by(title=title).first()
 
     if not message:
@@ -39,7 +55,7 @@ def init_message_queue(help_context_id=None, page_content=None):
         messages.append(
             {
                 "role": "system",
-                "content": f"{help_context_message.content}: {help_context.content}",
+                "content": f"{help_context_message}: {help_context.content}",
             }
         )
 
@@ -52,14 +68,14 @@ def init_message_queue(help_context_id=None, page_content=None):
     return messages
 
 
-async def start_conversation(
+def start_conversation(
     help_context_id=None,
     page_content=None,
     temperature=0.9,
     openai_model="gpt-3.5-turbo",
 ):
     chat_history = ChatHistoryModel()
-    await db.async_session.add(chat_history)
+    db.session.add(chat_history)
 
     messages = init_message_queue(help_context_id, page_content)
 
@@ -78,12 +94,12 @@ async def start_conversation(
     ai_msg_instance = send(messages, temperature, openai_model)
 
     chat_history.add_message(ai_msg_instance)
-    await db.async_session.commit()
+    db.session.commit()
 
     return chat_history
 
 
-async def send_message(
+def send_message(
     chat_history_id,
     message,
     help_context_id=None,
@@ -91,7 +107,7 @@ async def send_message(
     temperature=0.9,
     openai_model="gpt-3.5-turbo",
 ):
-    chat_history = await ChatHistoryModel.query.get(chat_history_id)
+    chat_history = ChatHistoryModel.query.get(chat_history_id)
     messages = init_message_queue(help_context_id, page_content)
     messages.append(
         {
@@ -103,14 +119,14 @@ async def send_message(
     ai_msg_instance = send(messages, temperature, openai_model)
 
     chat_history.add_message(ai_msg_instance)
-    await db.async_session.commit()
+    db.session.commit()
 
     return chat_history
 
 
-async def send(messages, temperature=0.9, openai_model="gpt-3.5-turbo"):
+def send(messages, temperature=0.9, openai_model="gpt-3.5-turbo"):
     # Send the messages to OpenAI
-    openai_response = await openai.ChatCompletion.create(
+    openai_response = openai.ChatCompletion.create(
         model=openai_model, messages=messages, temperature=temperature
     )
 
@@ -121,33 +137,91 @@ async def send(messages, temperature=0.9, openai_model="gpt-3.5-turbo"):
     return ChatMessageModel(role=ChatMessageModel.ASSISTANT, content=ai_message)
 
 
-async def get_project_title(description):
-    messages = [
-        {
-            "role": "system",
-            "content": "Project Title",
-        },
-        {
-            "role": "user",
-            "content": description,
-        },
-    ]
-    openai_response = await openai.ChatCompletion.create(
-        model="gpt-3.5-turbo", messages=messages, temperature=0.1
+def get_project_title(description):
+    messages = init_message_queue(help_context_id="project.new")
+    system_message = get_system_message("New Project Title")
+    messages.append({"role": "system", "content": f"{system_message}: {description}"})
+    openai_response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages, temperature=0.7
     )
+    ai_message = openai_response.choices[0].message["content"].strip()
+    return ai_message
 
 
-async def get_project_summary(description):
-    pass
+def get_project_summary(description):
+    messages = init_message_queue(help_context_id="project.new")
+    system_message = get_system_message("New Project Summary")
+    messages.append({"role": "system", "content": f"{system_message}: {description}"})
+    openai_response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages, temperature=0.3
+    )
+    ai_message = openai_response.choices[0].message["content"].strip()
+    return ai_message
 
 
-async def get_project_template(description):
-    pass
+def get_project_template(description):
+    messages = init_message_queue(help_context_id="project.new")
+
+    project_templates = db.session.query(ProjectTemplateModel.title).all()
+    if project_templates:
+        templates_str = ", ".join([template.title for template in project_templates])
+        messages.append(
+            {
+                "role": "system",
+                "content": f"Available Project Templates: {templates_str}",
+            }
+        )
+
+    system_message = get_system_message("New Project Template")
+    messages.append({"role": "system", "content": f"{system_message}: {description}"})
+    openai_response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages, temperature=0.3
+    )
+    ai_message = openai_response.choices[0].message["content"].strip()
+
+    query = text(
+        "SELECT id FROM project_templates WHERE MATCH(title) AGAINST(:search_term) LIMIT 1"
+    )
+    result = execute_sql(query, search_term=ai_message)
+
+    return result
 
 
-async def get_project_genre(description):
-    pass
+def get_project_genre(description):
+    messages = init_message_queue(help_context_id="project.new")
+
+    genres = db.session.query(GenreModel.name).all()
+    if genres:
+        genres_str = ", ".join([genre.name for genre in genres])
+        messages.append(
+            {
+                "role": "system",
+                "content": f"Available Genres: {genres_str}",
+            }
+        )
+
+    system_message = get_system_message("New Project Genre")
+    messages.append({"role": "system", "content": f"{system_message}: {description}"})
+
+    openai_response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages, temperature=0.3
+    )
+    ai_message = openai_response.choices[0].message["content"].strip()
+
+    query = text(
+        "SELECT id FROM genres WHERE MATCH(name) AGAINST(:search_term) LIMIT 1"
+    )
+    result = execute_sql(query, search_term=ai_message)
+
+    return result
 
 
-async def get_project_tags(description):
-    pass
+def get_project_tags(description):
+    messages = init_message_queue(help_context_id="project.new")
+    system_message = get_system_message("New Project Tags")
+    messages.append({"role": "system", "content": f"{system_message}: {description}"})
+    openai_response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages, temperature=0.3
+    )
+    ai_message = openai_response.choices[0].message["content"].strip()
+    return ai_message

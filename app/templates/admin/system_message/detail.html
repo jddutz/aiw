@@ -19,7 +19,11 @@
   <p>{{ model.type or 'N/A' }}</p>
 
   <h5>Associated Module</h5>
-  <p>{{ model.associated_module or 'N/A' }}</p>
+  {% if associated_module %}
+  <p>{{ associated_module.context_id }}: {{ associated_module.title }}</p>
+  {% else %}
+  <p>N/A</p>
+  {% endif %}
 
   <h5>Tags</h5>
   <p>{{ model.tags or 'N/A' }}</p>

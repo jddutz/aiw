@@ -16,12 +16,12 @@ chat_api_v1 = Blueprint("chat_api_v1", __name__)
 
 
 @chat_api_v1.route("/new", methods=["POST"])
-async def new_conversation():
+def new_conversation():
     if not request.is_json:
         return jsonify({"error": "Request mimetype must be application/json"}), 400
 
     chat_history = ChatHistoryModel()
-    await db.async_session.add(chat_history)
+    db.session.add(chat_history)
 
     # Help context id is used to query the system message table for additional context information
 
@@ -47,7 +47,7 @@ async def new_conversation():
     ai_msg_instance = send_messages(messages)
 
     chat_history.add_message(ai_msg_instance)
-    await db.async_session.commit()
+    db.session.commit()
 
     # Select the last 20 messages from the chat history
     return (
@@ -62,7 +62,7 @@ async def new_conversation():
 
 
 @chat_api_v1.route("/instructions", methods=["POST"])
-async def send_instructions():
+def send_instructions():
     # This endpoint is used to send specific instructions to the assistant
     # It uses a more advanced model, and provides more comprehensive instructions
     # than the chat interface
@@ -103,10 +103,10 @@ async def send_instructions():
     ai_msg_instance = send_messages(messages, openai_model="gpt-4")
 
     chat_history = ChatHistoryModel()
-    await db.async_session.add(chat_history)
+    db.session.add(chat_history)
 
     chat_history.add_message(ai_msg_instance)
-    await db.async_session.commit()
+    db.session.commit()
 
     return jsonify(
         {
@@ -122,7 +122,7 @@ async def send_instructions():
 
 
 @chat_api_v1.route("/<int:conversation_id>", methods=["GET"])
-async def get_conversation(conversation_id):
+def get_conversation(conversation_id):
     chat_history = ChatHistoryModel.query.get(conversation_id)
     if chat_history is None:
         return jsonify({"error": "Conversation not found"}), 404
@@ -131,7 +131,7 @@ async def get_conversation(conversation_id):
 
 @chat_api_v1.route("/", methods=["POST"])
 @chat_api_v1.route("/<int:conversation_id>", methods=["POST"])
-async def send_message(conversation_id=None):
+def send_message(conversation_id=None):
     if not request.is_json:
         return jsonify({"error": "Request mimetype must be application/json"}), 400
 
@@ -155,13 +155,13 @@ async def send_message(conversation_id=None):
             messages.append({"role": msg.role, "content": msg.content})
     else:
         chat_history = ChatHistoryModel()
-        await db.async_session.add(chat_history)
+        db.session.add(chat_history)
 
     # Create and add the user's message to the chat history
     user_msg_instance = ChatMessageModel(
         role=ChatMessageModel.USER, content=user_message
     )
-    await db.async_session.add(user_msg_instance)
+    db.session.add(user_msg_instance)
 
     chat_history.add_message(user_msg_instance)
 
@@ -185,10 +185,10 @@ async def send_message(conversation_id=None):
     ai_msg_instance = ChatMessageModel(
         role=ChatMessageModel.ASSISTANT, content=ai_message
     )
-    await db.async_session.add(ai_msg_instance)
+    db.session.add(ai_msg_instance)
 
     chat_history.add_message(ai_msg_instance)
-    await db.async_session.commit()
+    db.session.commit()
 
     return jsonify(
         {

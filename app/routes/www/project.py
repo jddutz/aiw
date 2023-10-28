@@ -24,7 +24,7 @@ blueprint = Blueprint("project", __name__)
 
 
 @blueprint.route("/", methods=["GET"])
-async def list():
+def list():
     search_term = request.args.get("q", "")
     if search_term:
         text_fields_filter = or_(
@@ -51,7 +51,7 @@ async def list():
 
 
 @blueprint.route("/new", methods=["GET", "POST"])
-async def new():
+def new():
     ai_dialog = AIDialogForm()
 
     form = CREATE_FORM()
@@ -64,9 +64,9 @@ async def new():
         project_description = ai_dialog.input_field.data
         form.title.data = ai.get_project_title(project_description)
         form.description.data = ai.get_project_summary(project_description)
-        form.project_template = ai.get_project_template(project_description)
-        form.genre_id = ai.get_project_genre(project_description)
-        form.tags = ai.get_project_tags(project_description)
+        form.project_template.data = ai.get_project_template(project_description)
+        form.genre_id.data = ai.get_project_genre(project_description)
+        form.tags.data = ai.get_project_tags(project_description)
 
     return render_template(
         f"{TEMPLATE_PATH}/create.html",
@@ -84,7 +84,7 @@ async def new():
 
 
 @blueprint.route("/create", methods=["GET", "POST"])
-async def create():
+def create():
     form = CREATE_FORM()
     form.genre_id.choices = [(genre.id, genre.name) for genre in GenreModel.query.all()]
     form.project_template.choices = [
@@ -94,20 +94,27 @@ async def create():
     if form.validate_on_submit():
         model = MODEL()
 
-        project_template_id = form.project_template.data
-        if project_template_id:
-            project_template = ProjectTemplateModel.query.get(project_template_id)
+        if form.project_template.data:
+            project_template = ProjectTemplateModel.query.get(
+                form.project_template.data
+            )
             model.project_type = project_template.title
             # TODO: unpack project_template.structure and create the appropriate sections
 
         model.owner_id = current_user.id
 
-        # remove the tags field, if we leave it in, populate_obj will throw a TypeError
-        del form.tags
+        if form.genre_id.data:
+            model.genre_id = form.genre_id.data
+
+        if form.tags.data:
+            model.tags = (
+                form.tags.data
+            )  # TODO: We need to parse the list of tags and make sure they are comma-separated
+
         form.populate_obj(obj=model)
 
-        await db.async_session.add(model)
-        await db.async_session.commit()
+        db.session.add(model)
+        db.session.commit()
 
         flash(
             f"{MODEL_DESC}, {model.title}, created successfully!",
@@ -131,7 +138,7 @@ async def create():
 
 
 @blueprint.route("/<int:id>", methods=["GET"])
-async def detail(id):
+def detail(id):
     model = MODEL.query.get_or_404(id)
 
     return render_template(
@@ -142,15 +149,15 @@ async def detail(id):
 
 
 @blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-async def edit(id):
+def edit(id):
     model = MODEL.query.get_or_404(id)
 
     form = EDIT_FORM(obj=model)
-    form.category.choices = load_genres()
+    form.genre_id.choices = [(genre.id, genre.name) for genre in GenreModel.query.all()]
 
     if form.validate_on_submit():
         form.populate_obj(model)
-        await db.async_session.commit()
+        db.session.commit()
 
         flash(
             f"{MODEL_DESC}, {model.title} updated successfully!",
@@ -174,11 +181,11 @@ async def edit(id):
 
 
 @blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
-async def delete(id):
+def delete(id):
     # Retrieve the model by its ID
     model = MODEL.query.get_or_404(id)
-    await db.async_session.delete(model)
-    await db.async_session.commit()
+    db.session.delete(model)
+    db.session.commit()
 
     flash(f"{MODEL_DESC}, {model.title}, deleted!", "success")
 

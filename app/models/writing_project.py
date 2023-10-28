@@ -37,8 +37,8 @@ class WritingProjectModel(BaseModel):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    title = db.Column(db.String(120), index=True, nullable=False)
-    description = db.Column(db.String(500), nullable=True)
+    title = db.Column(db.String(255), index=True, nullable=False)
+    description = db.Column(db.Text, nullable=True)
     collaborators = db.relationship(
         "UserModel",
         secondary=collaborators_link,
@@ -56,7 +56,7 @@ class WritingProjectModel(BaseModel):
         db.Integer, db.ForeignKey("project_templates.id"), nullable=True
     )
     project_type = db.Column(db.String(120), nullable=False)
-    tags = db.Column(db.String(255), nullable=False)
+    tags = db.Column(db.Text, nullable=False)
     genre_id = db.Column(db.Integer, db.ForeignKey("genres.id"), nullable=True)
     genre = db.relationship(
         "GenreModel", backref=db.backref("writing_projects", lazy=True)

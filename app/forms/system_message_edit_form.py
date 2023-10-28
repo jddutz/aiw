@@ -22,7 +22,9 @@ class SystemMessageEditForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired(), Length(max=255)])
     content = TextAreaField("Content", validators=[DataRequired()])
     type = SelectField("Type", choices=SYSTEM_MESSAGE_TYPES, validators=[Optional()])
-    associated_module = SelectField("Associated Module", validators=[Optional()])
+    associated_module = SelectField(
+        "Associated Module", validators=[Optional()], coerce=int
+    )
     tags = StringField("Tags", validators=[Length(max=255), Optional()])
     version = StringField("Version", validators=[Length(max=50), Optional()])
     is_active = BooleanField("Active", default=True)

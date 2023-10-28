@@ -13,7 +13,7 @@ from app.models.tag import Tag
 from datetime import datetime
 
 
-async def load_template_data():
+def load_template_data():
     # Load data from JSON file
     with open("project_templates.json", "r") as file:
         data = json.load(file)
@@ -32,8 +32,8 @@ async def load_template_data():
                 tag = Tag.query.filter_by(name=tag_name).first()
                 if not tag:
                     tag = Tag(name=tag_name, description=tag_name)
-                    await db.async_session.add(tag)
-                    await db.async_session.commit()
+                    db.session.add(tag)
+                    db.session.commit()
                 tags.append(tag)
 
             # Genres: Create if not exists and get GenreModel objects
@@ -42,8 +42,8 @@ async def load_template_data():
                 genre = GenreModel.query.filter_by(name=genre_name).first()
                 if not genre:
                     genre = GenreModel(name=genre_name, description=genre_name)
-                    await db.async_session.add(genre)
-                    await db.async_session.commit()
+                    db.session.add(genre)
+                    db.session.commit()
                 genres.append(genre)
 
             # Create the template object
@@ -67,10 +67,10 @@ async def load_template_data():
                 genres=genres,
             )
             new_template.set_links(template_data["links"])
-            await db.async_session.add(new_template)
+            db.session.add(new_template)
 
     # Commit all changes to the database
-    await db.async_session.commit()
+    db.session.commit()
 
 
 if __name__ == "__main__":

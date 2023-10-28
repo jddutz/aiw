@@ -23,7 +23,7 @@ def index():
 
 
 @model_blueprint.route("/create", methods=["GET", "POST"])
-async def create():
+def create():
     # form = ModelEditForm
 
     # The edit template will render differently depending on whether or not a model is provided
@@ -36,7 +36,7 @@ async def create():
 
 
 @model_blueprint.route("/<int:model_id>/detail", methods=["GET"])
-async def detail(model_id):
+def detail(model_id):
     # model = Model.query.get_or_404(model_id)
 
     return render_template(
@@ -47,7 +47,7 @@ async def detail(model_id):
 
 
 @model_blueprint.route("/<int:model_id>/edit", methods=["GET", "POST"])
-async def edit(model_id):
+def edit(model_id):
     # form = ModelEditForm
 
     return render_template(
@@ -59,5 +59,5 @@ async def edit(model_id):
 
 
 @model_blueprint.route("/<int:model_id>/delete", methods=["GET", "POST"])
-async def delete(model_id):
+def delete(model_id):
     return render_template("model_delete.html")

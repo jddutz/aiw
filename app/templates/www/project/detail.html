@@ -3,29 +3,29 @@
 <div class="container mt-5">
   <div class="card">
     <div class="card-header">
-      <h2>{{ project.title }}</h2>
+      <h2>{{ model.title }}</h2>
     </div>
     <div class="card-body">
-      <p class="card-text">{{ project.description }}</p>
+      <p class="card-text">{{ model.description }}</p>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item"><strong>Owner ID:</strong> {{ project.owner_id }}</li>
-        <li class="list-group-item"><strong>Visibility:</strong> {{ project.visibility }}</li>
-        <li class="list-group-item"><strong>Project Type:</strong> {{ project.project_type }}</li>
-        <li class="list-group-item"><strong>Tags:</strong> {% for tag in project.tags %} {{ tag.name }}{% if not
+        <li class="list-group-item"><strong>Owner ID:</strong> {{ model.owner_id }}</li>
+        <li class="list-group-item"><strong>Visibility:</strong> {{ model.visibility }}</li>
+        <li class="list-group-item"><strong>Project Type:</strong> {{ model.project_type }}</li>
+        <li class="list-group-item"><strong>Tags:</strong> {% for tag in model.tags %} {{ tag.name }}{% if not
           loop.last %}, {% endif %}{% endfor %}</li>
-        <li class="list-group-item"><strong>Genre:</strong> {{ project.genre.name if project.genre else 'N/A' }}
+        <li class="list-group-item"><strong>Genre:</strong> {{ model.genre.name if model.genre else 'N/A' }}
         </li>
-        <li class="list-group-item"><strong>Collaborators:</strong> {% for user in project.collaborators %} {{
+        <li class="list-group-item"><strong>Collaborators:</strong> {% for user in model.collaborators %} {{
                     user.username }}{% if not loop.last %}, {% endif %}{% endfor %}</li>
-        <li class="list-group-item"><strong>Reviewers:</strong> {% for user in project.reviewers %} {{
+        <li class="list-group-item"><strong>Reviewers:</strong> {% for user in model.reviewers %} {{
                     user.username }}{% if not loop.last %}, {% endif %}{% endfor %}</li>
-        <li class="list-group-item"><strong>Created on:</strong> {{ project.created.strftime('%Y-%m-%d') }}</li>
+        <li class="list-group-item"><strong>Created on:</strong> {{ model.created.strftime('%Y-%m-%d') }}</li>
         <li class="list-group-item"><strong>Last Modified:</strong> {{
-                    project.last_modified.strftime('%Y-%m-%d') }}</li>
+                    model.modified.strftime('%Y-%m-%d') }}</li>
       </ul>
       <div class="mt-3">
-        <a href="{{ url_for('project.update_project', project_id=project.id) }}" class="btn btn-primary">Edit</a>
-        <form action="{{ url_for('project.delete_project', project_id=project.id) }}" method="post" class="d-inline">
+        <a href="{{ url_for('project.edit', id=model.id) }}" class="btn btn-primary">Edit</a>
+        <form action="{{ url_for('project.delete', id=model.id) }}" method="post" class="d-inline">
           <input type="submit" value="Delete" class="btn btn-danger">
         </form>
       </div>
@@ -33,4 +33,4 @@
   </div>
 </div>
 {% endblock %}
-{% include "dialogs/confirm_delete.html" %}
+{% include "includes/delete_modal.html" %}

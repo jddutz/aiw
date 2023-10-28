@@ -1,6 +1,5 @@
 # app/routes/__init__.py
 
-import asyncio
 from flask import session, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 from app import flask_app
@@ -48,7 +47,7 @@ flask_app.register_blueprint(project_api_v1, url_prefix="/api/v1/project")
 
 # Home/index page
 @flask_app.route("/")
-async def index():
+def index():
     if current_user.is_authenticated:
         # If the user is authenticated, redirect them to the home/dashboard page
         return redirect(url_for("home"))
@@ -59,15 +58,14 @@ async def index():
 
 @flask_app.route("/home", methods=["GET"])
 @login_required
-async def home():
+def home():
     user_id = current_user.id
 
-    notifications, projects = await asyncio.gather(
-        # Gather notifications using the service
-        notification_manager.get_notifications_for_user(user_id, limit=10),
-        # Gather projects using the service
-        project_manager.get_recent_projects_for_user(user_id, limit=10),
-    )
+    # Gather notifications using the service
+    notifications = notification_manager.get_notifications_for_user(user_id, limit=10)
+
+    # Gather projects using the service
+    projects = project_manager.get_recent_projects_for_user(user_id, limit=10)
 
     return render_template(
         "dashboard.html",
@@ -79,6 +77,6 @@ async def home():
 
 @flask_app.route("/admin", methods=["GET"])
 @login_required
-async def admin():
+def admin():
     # If the user is not authenticated, render the landing page
     return render_template("admin/home.html")

@@ -4,7 +4,7 @@ from app import db
 from app.models import ChatMessageModel, ChatHistoryModel
 
 
-async def create_message(data):
+def create_message(data):
     """
     Create a new ChatMessageModel based on the provided data.
 
@@ -15,12 +15,12 @@ async def create_message(data):
     - (ChatMessageModel): The newly created ChatMessageModel instance.
     """
     message = ChatMessageModel.from_dict(data)
-    await db.async_session.add(message)
-    await db.async_session.commit()
+    db.session.add(message)
+    db.session.commit()
     return message
 
 
-async def get_message_by_id(message_id):
+def get_message_by_id(message_id):
     """
     Retrieve a ChatMessageModel by its ID.
 
@@ -33,7 +33,7 @@ async def get_message_by_id(message_id):
     return ChatMessageModel.query.get(message_id)
 
 
-async def get_all_messages_by_chat_history_id(chat_history_id):
+def get_all_messages_by_chat_history_id(chat_history_id):
     """
     Retrieve all ChatMessages associated with a particular ChatHistoryModel.
 
@@ -46,7 +46,7 @@ async def get_all_messages_by_chat_history_id(chat_history_id):
     return ChatMessageModel.query.filter_by(chat_history_id=chat_history_id).all()
 
 
-async def update_message(message_id, data):
+def update_message(message_id, data):
     """
     Update a ChatMessageModel with new data.
 
@@ -61,12 +61,12 @@ async def update_message(message_id, data):
     if message:
         for key, value in data.items():
             setattr(message, key, value)
-        await db.async_session.commit()
+        db.session.commit()
         return message
     return None
 
 
-async def delete_message(message_id):
+def delete_message(message_id):
     """
     Delete a ChatMessageModel by its ID.
 
@@ -78,7 +78,7 @@ async def delete_message(message_id):
     """
     message = ChatMessageModel.query.get(message_id)
     if message:
-        await db.async_session.delete(message)
-        await db.async_session.commit()
+        db.session.delete(message)
+        db.session.commit()
         return True
     return False

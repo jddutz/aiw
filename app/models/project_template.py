@@ -23,7 +23,7 @@ class ProjectTemplateModel(BaseModel):
     description = db.Column(db.Text, nullable=False)
     methodology = db.Column(db.Text, nullable=False)
     length = db.Column(db.String(255), nullable=False)
-    tags = db.Column(db.String(255), nullable=True)
+    tags = db.Column(db.Text, nullable=True)
     genres = db.relationship(
         "GenreModel",
         secondary="project_template_genres",

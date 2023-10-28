@@ -19,7 +19,7 @@ CACHED_MODULES = None
 UPDATE_CACHE = None
 
 
-async def load_modules():
+def load_modules():
     global CACHED_MODULES
     global UPDATE_CACHE
 
@@ -29,7 +29,7 @@ async def load_modules():
             return CACHED_MODULES
 
     modules = (
-        await db.async_session.query(HelpContextModel.id, HelpContextModel.title)
+        db.session.query(HelpContextModel.id, HelpContextModel.title)
         .distinct()
         .order_by(HelpContextModel.id.asc())
         .all()
@@ -46,7 +46,7 @@ blueprint = Blueprint(ROUTE_NAME, __name__)
 
 
 @blueprint.route("/", methods=["GET"])
-async def list():
+def list():
     search_term = request.args.get("q", "")
     if search_term:
         search_filter = or_(
@@ -68,14 +68,15 @@ async def list():
 
 
 @blueprint.route("/create", methods=["GET", "POST"])
-async def create():
+def create():
     form = EDIT_FORM()
 
     if form.validate_on_submit():
         model = MODEL()
         form.populate_obj(obj=model)
-        await db.async_session.add(model)
-        await db.async_session.commit()
+        delattr(model, "id")
+        db.session.add(model)
+        db.session.commit()
 
         flash(
             f"{MODEL_DESC}, {model.title}, created successfully!",
@@ -99,7 +100,7 @@ async def create():
 
 
 @blueprint.route("/<int:id>", methods=["GET"])
-async def detail(id):
+def detail(id):
     model = MODEL.query.get_or_404(id)
 
     return render_template(
@@ -110,14 +111,14 @@ async def detail(id):
 
 
 @blueprint.route("/<int:id>/edit", methods=["GET", "POST"])
-async def edit(id):
+def edit(id):
     model = MODEL.query.get_or_404(id)
 
     form = EDIT_FORM(obj=model)
 
     if form.validate_on_submit():
         form.populate_obj(model)
-        await db.async_session.commit()
+        db.session.commit()
 
         flash(
             f"{MODEL_DESC}, {model.title} updated successfully!",
@@ -141,11 +142,11 @@ async def edit(id):
 
 
 @blueprint.route("/<int:id>/delete", methods=["GET", "POST"])
-async def delete(id):
+def delete(id):
     # Retrieve the model by its ID
     model = MODEL.query.get_or_404(id)
-    await db.async_session.delete(model)
-    await db.async_session.commit()
+    db.session.delete(model)
+    db.session.commit()
 
     flash(f"{MODEL_DESC}, {model.title}, deleted!", "success")
 

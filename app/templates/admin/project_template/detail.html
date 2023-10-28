@@ -10,6 +10,9 @@
   </div>
   <hr>
 
+  <h5>Category</h5>
+  <p>{{ model.category }}</p>
+
   <h5>Description</h5>
   {% for description_text in model.description.split('\n') %}
   <p>{{ description_text }}</p>

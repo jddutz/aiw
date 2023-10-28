@@ -38,7 +38,7 @@
     <ul class="list-group">
       {% for activity in recent_activities %}
       <li class="list-group-item">
-        <a href="{{ url_for('activity.detail', activity_id=activity.id) }}">{{ activity.action }} on {{
+        <a href="{{ url_for('activity.detail', id=activity.id) }}">{{ activity.action }} on {{
                     activity.date }}</a>
       </li>
       {% else %}
@@ -53,7 +53,7 @@
     <ul class="list-group">
       {% for project in projects %}
       <li class="list-group-item">
-        <a href="{{ url_for('project.project_detail', project_id=project.id) }}">{{ project.title }}</a>
+        <a href="{{ url_for('project.detail', id=project.id) }}">{{ project.title }}</a>
       </li>
       {% else %}
       <li class="list-group-item">No projects found</li>

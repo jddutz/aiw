@@ -7,23 +7,23 @@ from app.models import ProjectTemplateModel
 
 
 class WritingProjectCreateForm(FlaskForm):
-    title = StringField("Title", validators=[DataRequired(), Length(min=2, max=120)])
-    description = TextAreaField("Description", validators=[Optional(), Length(max=500)])
+    title = StringField("Title", validators=[DataRequired(), Length(min=2, max=255)])
+    description = TextAreaField("Description", validators=[Optional()])
 
     # Dropdown of available ProjectTemplates
     project_template = SelectField(
         "Project Template",
-        coerce=int,  # This will convert the selected option to integer.
+        coerce=int,
         validators=[Optional()],
     )
 
     genre_id = SelectField(
-        "GenreModel",
+        "Genre",
         coerce=int,
         validators=[DataRequired()],
     )
 
-    tags = StringField("Tags", validators=[Optional(), Length(max=500)])
+    tags = StringField("Tags", validators=[Optional()])
 
     visibility = SelectField(
         "Visibility",

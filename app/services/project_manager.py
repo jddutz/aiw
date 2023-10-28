@@ -5,7 +5,7 @@ from app import db
 from app.models import WritingProjectModel, ProjectTemplateModel
 
 
-async def create_new_project(project_info):
+def create_new_project(project_info):
     """
     Create a new WritingProjectModel based on the provided project_info.
 
@@ -42,13 +42,13 @@ async def create_new_project(project_info):
     # data to add collections and story parts to the new project.
 
     # Add and commit the new project
-    await db.async_session.add(new_project)
-    await db.async_session.commit()
+    db.session.add(new_project)
+    db.session.commit()
 
     return new_project
 
 
-async def get_project_by_id(project_id):
+def get_project_by_id(project_id):
     """
     Fetch a WritingProjectModel based on its ID.
 
@@ -61,7 +61,7 @@ async def get_project_by_id(project_id):
     return WritingProjectModel.query.get(project_id)
 
 
-async def get_recent_projects_for_user(user_id, limit=10):
+def get_recent_projects_for_user(user_id, limit=10):
     """
     Fetch all projects associated with a user.
 
@@ -79,7 +79,7 @@ async def get_recent_projects_for_user(user_id, limit=10):
     return query.all()
 
 
-async def update_project(project_id, update_info):
+def update_project(project_id, update_info):
     """
     Update a WritingProjectModel's details.
 
@@ -97,11 +97,11 @@ async def update_project(project_id, update_info):
     for key, value in update_info.items():
         setattr(project, key, value)
 
-    await db.async_session.commit()
+    db.session.commit()
     return project
 
 
-async def delete_project(project_id):
+def delete_project(project_id):
     """
     Delete a WritingProjectModel based on its ID.
 
@@ -115,6 +115,6 @@ async def delete_project(project_id):
     if not project:
         return False
 
-    await db.async_session.delete(project)
-    await db.async_session.commit()
+    db.session.delete(project)
+    db.session.commit()
     return True

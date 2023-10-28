@@ -9,5 +9,5 @@ story_blueprint = Blueprint("story", __name__)
 
 
 @story_blueprint.route("/create", methods=["GET", "POST"])
-async def create():
+def create():
     pass

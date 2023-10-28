@@ -7,8 +7,8 @@ from wtforms.validators import DataRequired, Length, Optional
 
 class WritingProjectEditForm(FlaskForm):
     id = HiddenField()
-    title = StringField("Title", validators=[DataRequired(), Length(min=2, max=120)])
-    description = TextAreaField("Description", validators=[Optional(), Length(max=500)])
+    title = StringField("Title", validators=[DataRequired(), Length(min=2, max=255)])
+    description = TextAreaField("Description", validators=[Optional()])
 
     visibility = SelectField(
         "Visibility",
@@ -26,6 +26,6 @@ class WritingProjectEditForm(FlaskForm):
         validators=[DataRequired()],
     )
 
-    tags = StringField("Tags", validators=[Optional(), Length(max=500)])
+    tags = StringField("Tags", validators=[Optional()])
 
     submit = SubmitField("Save")
